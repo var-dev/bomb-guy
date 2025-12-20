@@ -1,0 +1,25 @@
+// {
+//   "compilerOptions": {
+//     "module": "commonjs",
+//     "target": "es6",
+//     "noImplicitAny": true,
+//     "sourceMap": false,
+//     "forceConsistentCasingInFileNames": true,
+//     "strict": true
+//   }
+// }
+
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "strict": true,
+        "target": "es6",
+        "noImplicitAny": true,
+        "sourceMap": false,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
+		"skipLibCheck": true,
+    },
+	"include": ["./**/*.ts"],
+    "exclude": ["./tests/**/*.ts"]
+}

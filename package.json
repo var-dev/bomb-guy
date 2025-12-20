@@ -1,0 +1,17 @@
+{
+  "name": "dynablaster",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --import tsx --no-warnings --watch --test ./tests/**/*.test.ts",
+    "tsc": "tsc -w"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^24.9.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
