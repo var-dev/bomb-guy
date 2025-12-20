@@ -11,13 +11,12 @@
 
 {
     "compilerOptions": {
-        "module": "commonjs",
+        "module": "esnext",
         "strict": true,
         "target": "es6",
         "noImplicitAny": true,
         "sourceMap": false,
         "forceConsistentCasingInFileNames": true,
-        "resolveJsonModule": true,
 		"skipLibCheck": true,
     },
 	"include": ["./**/*.ts"],

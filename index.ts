@@ -208,18 +208,36 @@ function gameLoop() {
   setTimeout(() => gameLoop(), sleep);
 }
 
-window.onload = () => {
-  gameLoop();
-};
 
 const LEFT_KEY = "ArrowLeft";
 const UP_KEY = "ArrowUp";
 const RIGHT_KEY = "ArrowRight";
 const DOWN_KEY = "ArrowDown";
-window.addEventListener("keydown", (e) => {
-  if (e.key === LEFT_KEY || e.key === "a") inputs.push(Input.LEFT);
-  else if (e.key === UP_KEY || e.key === "w") inputs.push(Input.UP);
-  else if (e.key === RIGHT_KEY || e.key === "d") inputs.push(Input.RIGHT);
-  else if (e.key === DOWN_KEY || e.key === "s") inputs.push(Input.DOWN);
-  else if (e.key === " ") inputs.push(Input.PLACE);
-});
+
+
+function browserMain() {
+  window.onload = () => {
+    gameLoop();
+  };
+
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === LEFT_KEY || e.key === "a") inputs.push(Input.LEFT);
+    else if (e.key === UP_KEY || e.key === "w") inputs.push(Input.UP);
+    else if (e.key === RIGHT_KEY || e.key === "d") inputs.push(Input.RIGHT);
+    else if (e.key === DOWN_KEY || e.key === "s") inputs.push(Input.DOWN);
+    else if (e.key === " ") inputs.push(Input.PLACE);
+  });
+}
+
+if (typeof document !== "undefined") browserMain();
+
+
+
+
+export {map, inputs, Input, update, delay}
+export type {Tile}
+
+export function resetDelay() {delay = 0}
+
+
