@@ -240,4 +240,7 @@ export type {Tile}
 
 export function resetDelay() {delay = 0}
 
+export function getMap() {return map}
 
+export function getPlayer() {return {x: playerx, y: playery}}
+export function isGameOver(){ return gameOver}
