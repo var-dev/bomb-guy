@@ -52,7 +52,7 @@ let gameOver = false;
 
 function explode(x: number, y: number, type: Tile) {
   if (map[y][x] === Tile.STONE) {
-    if (Math.random() < 0.1) map[y][x] = Tile.EXTRA_BOMB;
+    if (Math.random() < 0.01) map[y][x] = Tile.EXTRA_BOMB;
     else map[y][x] = type;
   } else if (map[y][x] !== Tile.UNBREAKABLE) {
     if (
@@ -236,7 +236,7 @@ if (typeof document !== "undefined") browserMain();
 
 
 export {map, inputs, Input, update, delay}
-export type {Tile}
+export {Tile}
 
 export function resetDelay() {delay = 0}
 
@@ -244,3 +244,6 @@ export function getMap() {return map}
 
 export function getPlayer() {return {x: playerx, y: playery}}
 export function isGameOver(){ return gameOver}
+export function doUpdates(n: number){
+  for(let i=0; i<n; i++) update()
+}

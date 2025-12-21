@@ -41,11 +41,6 @@ describe('how the bomb setting off process works', ()=>{
       [1, 2, 2, 2, 2, 0, 0, 14, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1],
     ];
-    // update()
-    // inputs.push(Input.RIGHT)
-    // update()
-    // inputs.push(Input.PLACE)
-    // update()
     update()
     resetDelay()
     update()
