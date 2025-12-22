@@ -364,6 +364,69 @@ let map: Tile[][] = [
   [1, 2, 2, 2, 2, 0, 0, 10, 1],
   [1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
+let gameMap: Tile9[][] = convertToGameMap(map)
+
+function convertToGameMap(sourceMap: Tile[][]): Tile9[][]{
+  // initialize generatedMap with the same dimensions as sourceMap
+  let generatedMap: Tile9[][] = sourceMap.map(row => row.map(() => new Unbreakable()));
+
+  for (let y = 0; y < sourceMap.length; y++) {
+    for (let x = 0; x < sourceMap[y].length; x++) {
+      switch (sourceMap[y][x]){
+        case Tile.AIR:
+          generatedMap[y][x] = new Air()
+          break;
+        case Tile.UNBREAKABLE:
+          generatedMap[y][x] = new Unbreakable()
+          break;
+        case Tile.STONE:
+          generatedMap[y][x] = new Stone()
+          break;
+        case Tile.BOMB:
+          generatedMap[y][x] = new Bomb()
+          break;
+        case Tile.BOMB_CLOSE:
+          generatedMap[y][x] = new BombClose()
+          break;
+        case Tile.BOMB_REALLY_CLOSE:
+          generatedMap[y][x] = new BombReallyClose()
+          break;
+        case Tile.TMP_FIRE:
+          generatedMap[y][x] = new TmpFire()
+          break;
+        case Tile.FIRE:
+          generatedMap[y][x] = new Fire()
+          break;
+        case Tile.EXTRA_BOMB:
+          generatedMap[y][x] = new ExtraBomb()
+          break;
+        case Tile.MONSTER_UP:
+          generatedMap[y][x] = new MonsterUp()
+          break;
+        case Tile.MONSTER_RIGHT:
+          generatedMap[y][x] = new MonsterRight()
+          break;
+        case Tile.TMP_MONSTER_RIGHT:
+          generatedMap[y][x] = new TmpMonsterRight()
+          break;
+        case Tile.MONSTER_DOWN:
+          generatedMap[y][x] = new MonsterDown()
+          break;
+        case Tile.TMP_MONSTER_DOWN:
+          generatedMap[y][x] = new TmpMonsterDown()
+          break;
+        case Tile.MONSTER_LEFT:
+          generatedMap[y][x] = new MonsterLeft()
+          break;
+        default:
+          ((value: never)=>{
+          throw new Error(`Unhandled case ${value}`)})(sourceMap[y][x] as never)
+      }
+    }
+  }
+  return generatedMap;
+}
+
 
 let inputs: Input[] = [];
 
