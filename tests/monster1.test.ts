@@ -1,11 +1,11 @@
 import { it, describe } from "node:test";
 import { strict as assert } from 'node:assert'
 
-import { update, inputs, Input, resetDelay, getMap, getPlayer, isGameOver} from '../index'
+import { update, inputs, Input, resetDelay, getMap, getPlayer, isGameOver, MonsterUp, Air, MonsterRight} from '../index'
 import { Place, Left, Right, Up, Down } from "../index";
-import { Tile } from '../index'
+import { Tile, convertToGameMap } from '../index'
 
-const expectedMap: Tile[][] = [
+const expectedMap: Tile[][] = convertToGameMap([
       [1, 1, 1, 1, 1, 1, 1, 1, 1],
       [1, 0, 0, 2, 2, 2, 2, 2, 1],
       [1, 0, 1, 2, 1, 2, 1, 2, 1],
@@ -15,7 +15,7 @@ const expectedMap: Tile[][] = [
       [1, 2, 1, 2, 1, 0, 1, 0, 1],
       [1, 2, 2, 2, 2, 0, 0, 12, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1],
-    ];
+    ]);
 
 // assert.deepStrictEqual(getMap(), [])
 
@@ -42,7 +42,7 @@ describe('how monster interactions kill player', ()=>{
     assert.deepStrictEqual(getPlayer(), expectedPlayer)
 
     const expectedAir = getMap()[1][3]
-    assert.strictEqual(expectedAir, Tile.AIR)
+    assert.strictEqual(expectedAir.isAir(), new Air().isAir())
   })
   it('detonates bomb at 3,1', ()=>{
     update()
@@ -72,7 +72,7 @@ describe('how monster interactions kill player', ()=>{
     assert.deepStrictEqual(getPlayer(), expectedPlayer)
 
     const expectedAir = getMap()[1][3]
-    assert.strictEqual(expectedAir, Tile.AIR)
+    assert.strictEqual(expectedAir.isAir(), new Air().isAir())
   })
   it('detonates bomb at 4,1', ()=>{
     update()
@@ -102,7 +102,7 @@ describe('how monster interactions kill player', ()=>{
     assert.deepStrictEqual(getPlayer(), expectedPlayer)
 
     const expectedAir = getMap()[1][4]
-    assert.strictEqual(expectedAir, Tile.AIR)
+    assert.strictEqual(expectedAir.isAir(), new Air().isAir())
   })
   it('detonates bomb at 5,1', ()=>{
     update()
@@ -132,7 +132,7 @@ describe('how monster interactions kill player', ()=>{
     assert.deepStrictEqual(getPlayer(), expectedPlayer)
 
     const expectedAir = getMap()[1][5]
-    assert.strictEqual(expectedAir, Tile.AIR)
+    assert.strictEqual(expectedAir.isAir(), new Air().isAir())
   })
   it('detonates bomb at 5,2', ()=>{
     update()
@@ -162,7 +162,7 @@ describe('how monster interactions kill player', ()=>{
     assert.deepStrictEqual(getPlayer(), expectedPlayer)
 
     const expectedAir = getMap()[2][5]
-    assert.strictEqual(expectedAir, Tile.AIR)
+    assert.strictEqual(expectedAir.isAir(), new Air().isAir())
   })
   it('detonates bomb at 5,3', ()=>{
     update()
@@ -192,11 +192,11 @@ describe('how monster interactions kill player', ()=>{
     assert.deepStrictEqual(getPlayer(), expectedPlayer)
 
     const expectedAir = getMap()[3][5]
-    assert.strictEqual(expectedAir, Tile.AIR)
+    assert.strictEqual(expectedAir.isAir(), new Air().isAir())
   })
   it('expected that monster is at 7,5', ()=>{
     const expectedMonster = getMap()[5][7]
-    assert.strictEqual(expectedMonster, Tile.MONSTER_RIGHT)
+    assert.strictEqual(expectedMonster.isMonsterRight(), new MonsterRight().isMonsterRight())
   })
   it('detonates bomb at 5,4', ()=>{
     update()
@@ -226,17 +226,17 @@ describe('how monster interactions kill player', ()=>{
     assert.deepStrictEqual(getPlayer(), expectedPlayer)
 
     const expectedAir = getMap()[4][5]
-    assert.strictEqual(expectedAir, Tile.AIR)
+    assert.strictEqual(expectedAir.isAir(), new Air().isAir())///
   })
   it('expected that monster is at 5,6', ()=>{
     const expectedMonster = getMap()[6][5]
-    assert.strictEqual(expectedMonster, Tile.MONSTER_UP)
+    assert.strictEqual(expectedMonster.isMonsterUp(), new MonsterUp().isMonsterUp())
   })
   it('expected that monster is at 5,5', ()=>{
     update()
     resetDelay()
     const expectedMonster = getMap()[5][5]
-    assert.strictEqual(expectedMonster, Tile.MONSTER_UP)
+    assert.strictEqual(expectedMonster.isMonsterUp(), new MonsterUp().isMonsterUp())
   })
   it('expected that monster is at 5,4', ()=>{
     update()
@@ -244,7 +244,7 @@ describe('how monster interactions kill player', ()=>{
     const expectedPlayer = {x: 5, y: 2}
     assert.deepStrictEqual(getPlayer(), expectedPlayer)
     const expectedMonster = getMap()[4][5]
-    assert.strictEqual(expectedMonster, Tile.MONSTER_UP)
+    assert.strictEqual(expectedMonster.isMonsterUp(), new MonsterUp().isMonsterUp())
   })
   it('expected that monster is at 5,3', ()=>{
     update()
@@ -252,7 +252,7 @@ describe('how monster interactions kill player', ()=>{
     const expectedPlayer = {x: 5, y: 2}
     assert.deepStrictEqual(getPlayer(), expectedPlayer)
     const expectedMonster = getMap()[3][5]
-    assert.strictEqual(expectedMonster, Tile.MONSTER_UP)
+    assert.strictEqual(expectedMonster.isMonsterUp(), new MonsterUp().isMonsterUp())
   })
   it('expected that monster is at 5,2', ()=>{
     update()
@@ -260,7 +260,7 @@ describe('how monster interactions kill player', ()=>{
     const expectedPlayer = {x: 5, y: 2}
     assert.deepStrictEqual(getPlayer(), expectedPlayer)
     const expectedMonster = getMap()[2][5]
-    assert.strictEqual(expectedMonster, Tile.MONSTER_UP)
+    assert.strictEqual(expectedMonster.isMonsterUp(), new MonsterUp().isMonsterUp())
   })
   it('should be game over', ()=>{
     update()

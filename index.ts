@@ -4,7 +4,7 @@ const SLEEP = 1000 / FPS;
 const TPS = 2;
 const DELAY = FPS / TPS;
 
-enum Tile {
+enum RawTile {
   AIR,
   UNBREAKABLE,
   STONE,
@@ -22,7 +22,7 @@ enum Tile {
   MONSTER_LEFT,
 }
 
-export interface Tile9 {
+export interface Tile {
   isAir(): boolean,
   isUnbreakable(): boolean,
   isStone(): boolean,
@@ -39,7 +39,7 @@ export interface Tile9 {
   isTmpMonsterDown(): boolean,
   isMonsterLeft(): boolean,
 }
-export class Air implements Tile9 {
+export class Air implements Tile {
   isAir(): boolean { return true; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -56,7 +56,7 @@ export class Air implements Tile9 {
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
 }
-export class Unbreakable implements Tile9 {
+export class Unbreakable implements Tile {
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return true; }
   isStone(): boolean { return false; }
@@ -73,7 +73,7 @@ export class Unbreakable implements Tile9 {
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
 }
-export class Stone implements Tile9 {
+export class Stone implements Tile {
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return true; }
@@ -90,7 +90,7 @@ export class Stone implements Tile9 {
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
 }
-export class Bomb implements Tile9 {
+export class Bomb implements Tile {
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -107,7 +107,7 @@ export class Bomb implements Tile9 {
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
 }
-export class BombClose implements Tile9 {
+export class BombClose implements Tile {
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -124,7 +124,7 @@ export class BombClose implements Tile9 {
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
 }
-export class BombReallyClose implements Tile9 {
+export class BombReallyClose implements Tile {
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -141,7 +141,7 @@ export class BombReallyClose implements Tile9 {
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
 }
-export class TmpFire implements Tile9 {
+export class TmpFire implements Tile {
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -158,7 +158,7 @@ export class TmpFire implements Tile9 {
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
 }
-export class Fire implements Tile9 {
+export class Fire implements Tile {
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -175,7 +175,7 @@ export class Fire implements Tile9 {
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
 }
-export class ExtraBomb implements Tile9 {
+export class ExtraBomb implements Tile {
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -192,7 +192,7 @@ export class ExtraBomb implements Tile9 {
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
 }
-export class MonsterUp implements Tile9 {
+export class MonsterUp implements Tile {
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -209,7 +209,7 @@ export class MonsterUp implements Tile9 {
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
 }
-export class MonsterRight implements Tile9 {
+export class MonsterRight implements Tile {
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -226,7 +226,7 @@ export class MonsterRight implements Tile9 {
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
 }
-export class TmpMonsterRight implements Tile9 {
+export class TmpMonsterRight implements Tile {
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -243,7 +243,7 @@ export class TmpMonsterRight implements Tile9 {
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
 }
-export class MonsterDown implements Tile9 {
+export class MonsterDown implements Tile {
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -260,7 +260,7 @@ export class MonsterDown implements Tile9 {
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
 }
-export class TmpMonsterDown implements Tile9 {
+export class TmpMonsterDown implements Tile {
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -277,7 +277,7 @@ export class TmpMonsterDown implements Tile9 {
   isTmpMonsterDown(): boolean { return true; }
   isMonsterLeft(): boolean { return false; }
 }
-export class MonsterLeft implements Tile9 {
+export class MonsterLeft implements Tile {
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -344,7 +344,7 @@ export class Place implements Input {
   isPlaceBomb(): boolean { return true; }
   move(): void { 
     if (bombs > 0) {
-      map[playery][playerx] = Tile.BOMB;
+      gameMap[playery][playerx] = new Bomb();
       bombs--;
     }
   }
@@ -353,7 +353,7 @@ export class Place implements Input {
 
 let playerx = 1;
 let playery = 1;
-let map: Tile[][] = [
+let map: RawTile[][] = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 0, 0, 2, 2, 2, 2, 2, 1],
   [1, 0, 1, 2, 1, 2, 1, 2, 1],
@@ -364,58 +364,58 @@ let map: Tile[][] = [
   [1, 2, 2, 2, 2, 0, 0, 10, 1],
   [1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
-let gameMap: Tile9[][] = convertToGameMap(map)
+let gameMap: Tile[][] = convertToGameMap(map)
 
-function convertToGameMap(sourceMap: Tile[][]): Tile9[][]{
+export function convertToGameMap(sourceMap: RawTile[][]): Tile[][]{
   // initialize generatedMap with the same dimensions as sourceMap
-  let generatedMap: Tile9[][] = sourceMap.map(row => row.map(() => new Unbreakable()));
+  let generatedMap: Tile[][] = sourceMap.map(row => row.map(() => new Unbreakable()));
 
   for (let y = 0; y < sourceMap.length; y++) {
     for (let x = 0; x < sourceMap[y].length; x++) {
       switch (sourceMap[y][x]){
-        case Tile.AIR:
+        case RawTile.AIR:
           generatedMap[y][x] = new Air()
           break;
-        case Tile.UNBREAKABLE:
+        case RawTile.UNBREAKABLE:
           generatedMap[y][x] = new Unbreakable()
           break;
-        case Tile.STONE:
+        case RawTile.STONE:
           generatedMap[y][x] = new Stone()
           break;
-        case Tile.BOMB:
+        case RawTile.BOMB:
           generatedMap[y][x] = new Bomb()
           break;
-        case Tile.BOMB_CLOSE:
+        case RawTile.BOMB_CLOSE:
           generatedMap[y][x] = new BombClose()
           break;
-        case Tile.BOMB_REALLY_CLOSE:
+        case RawTile.BOMB_REALLY_CLOSE:
           generatedMap[y][x] = new BombReallyClose()
           break;
-        case Tile.TMP_FIRE:
+        case RawTile.TMP_FIRE:
           generatedMap[y][x] = new TmpFire()
           break;
-        case Tile.FIRE:
+        case RawTile.FIRE:
           generatedMap[y][x] = new Fire()
           break;
-        case Tile.EXTRA_BOMB:
+        case RawTile.EXTRA_BOMB:
           generatedMap[y][x] = new ExtraBomb()
           break;
-        case Tile.MONSTER_UP:
+        case RawTile.MONSTER_UP:
           generatedMap[y][x] = new MonsterUp()
           break;
-        case Tile.MONSTER_RIGHT:
+        case RawTile.MONSTER_RIGHT:
           generatedMap[y][x] = new MonsterRight()
           break;
-        case Tile.TMP_MONSTER_RIGHT:
+        case RawTile.TMP_MONSTER_RIGHT:
           generatedMap[y][x] = new TmpMonsterRight()
           break;
-        case Tile.MONSTER_DOWN:
+        case RawTile.MONSTER_DOWN:
           generatedMap[y][x] = new MonsterDown()
           break;
-        case Tile.TMP_MONSTER_DOWN:
+        case RawTile.TMP_MONSTER_DOWN:
           generatedMap[y][x] = new TmpMonsterDown()
           break;
-        case Tile.MONSTER_LEFT:
+        case RawTile.MONSTER_LEFT:
           generatedMap[y][x] = new MonsterLeft()
           break;
         default:
@@ -435,32 +435,32 @@ let bombs = 1;
 let gameOver = false;
 
 function explode(x: number, y: number, type: Tile) {
-  if (map[y][x] === Tile.STONE) {
-    if (Math.random() < 0.01) map[y][x] = Tile.EXTRA_BOMB;
-    else map[y][x] = type;
-  } else if (map[y][x] !== Tile.UNBREAKABLE) {
+  if (gameMap[y][x].isStone() === new Stone().isStone()) {
+    if (Math.random() < 0.01) gameMap[y][x] = new ExtraBomb();
+    else gameMap[y][x] = type;
+  } else if (gameMap[y][x].isUnbreakable() !== new Unbreakable().isUnbreakable()) {
     if (
-      map[y][x] === Tile.BOMB ||
-      map[y][x] === Tile.BOMB_CLOSE ||
-      map[y][x] === Tile.BOMB_REALLY_CLOSE
+      gameMap[y][x].isBomb() === new Bomb().isBomb() ||
+      gameMap[y][x].isBombClose() === new BombClose().isBombClose() ||
+      gameMap[y][x].isBombReallyClose() === new BombReallyClose().isBombReallyClose()
     )
       bombs++;
-    map[y][x] = type;
+    gameMap[y][x] = type;
   }
 }
 
 function move(x: number, y: number) {
   if (
-    map[playery + y][playerx + x] === Tile.AIR ||
-    map[playery + y][playerx + x] === Tile.FIRE
+    gameMap[playery + y][playerx + x].isAir() === new Air().isAir() ||
+    gameMap[playery + y][playerx + x].isFire() === new Fire().isFire()
   ) {
     playery += y;
     playerx += x;
-  } else if (map[playery + y][playerx + x] === Tile.EXTRA_BOMB) {
+  } else if (gameMap[playery + y][playerx + x].isExtraBomb() === new ExtraBomb().isExtraBomb()) {
     playery += y;
     playerx += x;
     bombs++;
-    map[playery][playerx] = Tile.AIR;
+    gameMap[playery][playerx] = new Air();
   }
 }
 
@@ -482,61 +482,61 @@ function update() {
 }
 
 function checkGameOver() {
-  if (map[playery][playerx] === Tile.FIRE ||
-    map[playery][playerx] === Tile.MONSTER_DOWN ||
-    map[playery][playerx] === Tile.MONSTER_UP ||
-    map[playery][playerx] === Tile.MONSTER_LEFT ||
-    map[playery][playerx] === Tile.MONSTER_RIGHT)
+  if (gameMap[playery][playerx].isFire() === new Fire().isFire() ||
+    gameMap[playery][playerx].isMonsterDown() === new MonsterDown().isMonsterDown() ||
+    gameMap[playery][playerx].isMonsterUp() === new MonsterUp().isMonsterUp() ||
+    gameMap[playery][playerx].isMonsterLeft() === new MonsterLeft().isMonsterLeft() ||
+    gameMap[playery][playerx].isMonsterRight() === new MonsterRight().isMonsterRight())
     gameOver = true;
 }
 
 function tileHandler(y: number, x: number) {
-  if (map[y][x] === Tile.BOMB) {
-    map[y][x] = Tile.BOMB_CLOSE;
-  } else if (map[y][x] === Tile.BOMB_CLOSE) {
-    map[y][x] = Tile.BOMB_REALLY_CLOSE;
-  } else if (map[y][x] === Tile.BOMB_REALLY_CLOSE) {
-    explode(x + 0, y - 1, Tile.FIRE);
-    explode(x + 0, y + 1, Tile.TMP_FIRE);
-    explode(x - 1, y + 0, Tile.FIRE);
-    explode(x + 1, y + 0, Tile.TMP_FIRE);
-    map[y][x] = Tile.FIRE;
+  if (gameMap[y][x].isBomb() === new Bomb().isBomb()) {
+    gameMap[y][x] = new BombClose();
+  } else if (gameMap[y][x].isBombClose() === new BombClose().isBombClose()) {
+    gameMap[y][x] = new BombReallyClose();
+  } else if (gameMap[y][x].isBombReallyClose() === new BombReallyClose().isBombReallyClose()) {
+    explode(x + 0, y - 1, new Fire());
+    explode(x + 0, y + 1, new TmpFire());
+    explode(x - 1, y + 0, new Fire());
+    explode(x + 1, y + 0, new TmpFire());
+    gameMap[y][x] = new Fire();
     bombs++;
-  } else if (map[y][x] === Tile.TMP_FIRE) {
-    map[y][x] = Tile.FIRE;
-  } else if (map[y][x] === Tile.FIRE) {
-    map[y][x] = Tile.AIR;
-  } else if (map[y][x] === Tile.TMP_MONSTER_DOWN) {
-    map[y][x] = Tile.MONSTER_DOWN;
-  } else if (map[y][x] === Tile.TMP_MONSTER_RIGHT) {
-    map[y][x] = Tile.MONSTER_RIGHT;
-  } else if (map[y][x] === Tile.MONSTER_RIGHT) {
-    if (map[y][x + 1] === Tile.AIR) {
-      map[y][x] = Tile.AIR;
-      map[y][x + 1] = Tile.TMP_MONSTER_RIGHT;
+  } else if (gameMap[y][x].isTmpFire() === new TmpFire().isTmpFire()) {
+    gameMap[y][x] = new Fire();
+  } else if (gameMap[y][x].isFire() === new Fire().isFire()) {
+    gameMap[y][x] = new Air();
+  } else if (gameMap[y][x].isTmpMonsterDown() === new TmpMonsterDown().isTmpMonsterDown()) {
+    gameMap[y][x] = new MonsterDown();
+  } else if (gameMap[y][x].isTmpMonsterRight() === new TmpMonsterRight().isTmpMonsterRight()) {
+    gameMap[y][x] = new MonsterRight();
+  } else if (gameMap[y][x].isMonsterRight() === new MonsterRight().isMonsterRight()) {
+    if (gameMap[y][x + 1].isAir() === new Air().isAir()) {
+      gameMap[y][x] = new Air();
+      gameMap[y][x + 1] = new TmpMonsterRight();
     } else {
-      map[y][x] = Tile.MONSTER_DOWN;
+      gameMap[y][x] = new MonsterDown();
     }
-  } else if (map[y][x] === Tile.MONSTER_DOWN) {
-    if (map[y + 1][x] === Tile.AIR) {
-      map[y][x] = Tile.AIR;
-      map[y + 1][x] = Tile.TMP_MONSTER_DOWN;
+  } else if (gameMap[y][x].isMonsterDown() === new MonsterDown().isMonsterDown()) {
+    if (gameMap[y + 1][x].isAir() === new Air().isAir()) {
+      gameMap[y][x] = new Air();
+      gameMap[y + 1][x] = new TmpMonsterDown();
     } else {
-      map[y][x] = Tile.MONSTER_LEFT;
+      gameMap[y][x] = new MonsterLeft();
     }
-  } else if (map[y][x] === Tile.MONSTER_LEFT) {
-    if (map[y][x - 1] === Tile.AIR) {
-      map[y][x] = Tile.AIR;
-      map[y][x - 1] = Tile.MONSTER_LEFT;
+  } else if (gameMap[y][x].isMonsterLeft() === new MonsterLeft().isMonsterLeft()) {
+    if (gameMap[y][x - 1].isAir() === new Air().isAir()) {
+      gameMap[y][x] = new Air();
+      gameMap[y][x - 1] = new MonsterLeft();
     } else {
-      map[y][x] = Tile.MONSTER_UP;
+      gameMap[y][x] = new MonsterUp();
     }
-  } else if (map[y][x] === Tile.MONSTER_UP) {
-    if (map[y - 1][x] === Tile.AIR) {
-      map[y][x] = Tile.AIR;
-      map[y - 1][x] = Tile.MONSTER_UP;
+  } else if (gameMap[y][x].isMonsterUp() === new MonsterUp().isMonsterUp()) {
+    if (gameMap[y - 1][x].isAir() === new Air().isAir()) {
+      gameMap[y][x] = new Air();
+      gameMap[y - 1][x] = new MonsterUp();
     } else {
-      map[y][x] = Tile.MONSTER_RIGHT;
+      gameMap[y][x] = new MonsterRight();
     }
   }
 }
@@ -548,24 +548,24 @@ function draw() {
   g.clearRect(0, 0, canvas.width, canvas.height);
 
   // Draw map
-  for (let y = 0; y < map.length; y++) {
-    for (let x = 0; x < map[y].length; x++) {
-      if (map[y][x] === Tile.UNBREAKABLE) g.fillStyle = "#999999";
-      else if (map[y][x] === Tile.STONE) g.fillStyle = "#0000cc";
-      else if (map[y][x] === Tile.EXTRA_BOMB) g.fillStyle = "#00cc00";
-      else if (map[y][x] === Tile.FIRE) g.fillStyle = "#ffcc00";
+  for (let y = 0; y < gameMap.length; y++) {
+    for (let x = 0; x < gameMap[y].length; x++) {
+      if (gameMap[y][x].isUnbreakable() === new Unbreakable().isUnbreakable()) g.fillStyle = "#999999";
+      else if (gameMap[y][x].isStone() === new Stone().isStone()) g.fillStyle = "#0000cc";
+      else if (gameMap[y][x].isExtraBomb() === new ExtraBomb().isExtraBomb()) g.fillStyle = "#00cc00";
+      else if (gameMap[y][x].isFire() === new Fire().isFire()) g.fillStyle = "#ffcc00";
       else if (
-        map[y][x] === Tile.MONSTER_UP ||
-        map[y][x] === Tile.MONSTER_LEFT ||
-        map[y][x] === Tile.MONSTER_RIGHT ||
-        map[y][x] === Tile.MONSTER_DOWN
+        gameMap[y][x].isMonsterUp() === new MonsterUp().isMonsterUp() ||
+        gameMap[y][x].isMonsterLeft() === new MonsterLeft().isMonsterLeft() ||
+        gameMap[y][x].isMonsterRight() === new MonsterRight().isMonsterRight() ||
+        gameMap[y][x].isMonsterDown() === new MonsterDown().isMonsterDown() 
       )
         g.fillStyle = "#cc00cc";
-      else if (map[y][x] === Tile.BOMB) g.fillStyle = "#770000";
-      else if (map[y][x] === Tile.BOMB_CLOSE) g.fillStyle = "#cc0000";
-      else if (map[y][x] === Tile.BOMB_REALLY_CLOSE) g.fillStyle = "#ff0000";
+      else if (gameMap[y][x].isBomb() === new Bomb().isBomb()) g.fillStyle = "#770000";
+      else if (gameMap[y][x].isBombClose() === new BombClose().isBombClose()) g.fillStyle = "#cc0000";
+      else if (gameMap[y][x].isBombReallyClose() === new BombReallyClose().isBombReallyClose()) g.fillStyle = "#ff0000";
 
-      if (map[y][x] !== Tile.AIR)
+      if (gameMap[y][x].isAir() !== new Air().isAir())
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
   }
@@ -614,25 +614,24 @@ if (typeof document !== "undefined") browserMain();
 
 
 export { map, inputs,  update, delay };
-export { Tile };
 
 export function resetDelay() {delay = 0}
 
-export function getMap() {return map}
+export function getMap() {return gameMap}
 
 export function getPlayer() {return {x: playerx, y: playery}}
 export function isGameOver(){ return gameOver}
 export function getMonster(): {x: number, y: number} {
   let monster: {x: number, y: number} = {x: -1, y: -1}
-  map.some((row, y)=>
+  gameMap.some((row, y)=>
     row.some((tile, x)=>{
       if (
-          tile === Tile.MONSTER_UP || 
-          tile === Tile.MONSTER_DOWN || 
-          tile === Tile.MONSTER_LEFT || 
-          tile === Tile.MONSTER_RIGHT ||
-          tile === Tile.TMP_MONSTER_DOWN ||
-          tile === Tile.TMP_MONSTER_RIGHT
+          tile.isMonsterUp() === new MonsterUp().isMonsterUp() || 
+          tile.isMonsterDown() === new MonsterDown().isMonsterDown() || 
+          tile.isMonsterLeft() === new MonsterLeft().isMonsterLeft() || 
+          tile.isMonsterRight() === new MonsterRight().isMonsterRight() ||
+          tile.isTmpMonsterDown() === new TmpMonsterDown().isTmpMonsterDown()||
+          tile.isTmpMonsterRight() === new TmpMonsterRight().isTmpMonsterRight()
         ) {
         monster =  {x, y}
       }
@@ -640,15 +639,15 @@ export function getMonster(): {x: number, y: number} {
   return monster
 }
 export function isMonsterThere(): boolean {
-  return map.some((row)=>
+  return gameMap.some((row)=>
     row.some((tile)=>{
       return (
-        tile === Tile.MONSTER_UP || 
-        tile === Tile.MONSTER_DOWN || 
-        tile === Tile.MONSTER_LEFT || 
-        tile === Tile.MONSTER_RIGHT ||
-        tile === Tile.TMP_MONSTER_DOWN ||
-        tile === Tile.TMP_MONSTER_RIGHT
+        tile.isMonsterUp() === new MonsterUp().isMonsterUp() || 
+          tile.isMonsterDown() === new MonsterDown().isMonsterDown() || 
+          tile.isMonsterLeft() === new MonsterLeft().isMonsterLeft() || 
+          tile.isMonsterRight() === new MonsterRight().isMonsterRight() ||
+          tile.isTmpMonsterDown() === new TmpMonsterDown().isTmpMonsterDown()||
+          tile.isTmpMonsterRight() === new TmpMonsterRight().isTmpMonsterRight()
       ) 
   }))
 }
