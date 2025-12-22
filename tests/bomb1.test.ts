@@ -1,7 +1,8 @@
 import {it, describe} from 'node:test'
 import { strict as assert } from 'node:assert'
 
-import { update, inputs, Input, resetDelay, getMap, getPlayer, isGameOver} from '../index'
+import { update, inputs, resetDelay, getMap, getPlayer, isGameOver} from '../index'
+import { Place, Left, Right, Up, Down } from "../index";
 import type { Tile } from '../index'
 
 
@@ -19,13 +20,13 @@ describe('how the bomb setting off process works', ()=>{
       [1, 1, 1, 1, 1, 1, 1, 1, 1],
     ];
     update()
-    inputs.push(Input.RIGHT)
+    inputs.push(new Right())
     update()
-    inputs.push(Input.PLACE)
+    inputs.push(new Place())
     update()
-    inputs.push(Input.LEFT)
+    inputs.push(new Left())
     update()
-    inputs.push(Input.DOWN)
+    inputs.push(new Down())
     update()
     assert.deepStrictEqual(getMap(), expectedMap)
   })
@@ -114,19 +115,19 @@ describe('how the bomb setting off process works', ()=>{
       [1, 1, 1, 1, 1, 1, 1, 1, 1],
     ];
     update()
-    inputs.push(Input.UP)
+    inputs.push(new Up())
     update()
     resetDelay()
-    inputs.push(Input.RIGHT)
+    inputs.push(new Right())
     update()
     resetDelay()
-    inputs.push(Input.RIGHT)
+    inputs.push(new Right())
     update()
     resetDelay()
-    inputs.push(Input.PLACE)
+    inputs.push(new Place())
     update()
     resetDelay()
-    inputs.push(Input.LEFT)
+    inputs.push(new Left())
     update()
     resetDelay() // 5 - BOMB_REALLY_CLOSE
     const expectedPlayer = {x: 2, y: 1}

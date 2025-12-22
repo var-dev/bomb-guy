@@ -22,7 +22,7 @@ enum Tile {
   MONSTER_LEFT,
 }
 
-enum Input {
+enum Input1 {
   UP,
   DOWN,
   LEFT,
@@ -30,7 +30,7 @@ enum Input {
   PLACE,
 }
 
-interface Input9 {
+export interface Input {
   isUp(): boolean,
   isDown(): boolean,
   isLeft(): boolean,
@@ -38,35 +38,35 @@ interface Input9 {
   placeBomb(): boolean,
 }
 
-class Up implements Input9 {
+export class Up implements Input {
   isUp(): boolean { return true; }
   isDown(): boolean { return false; }
   isLeft(): boolean { return false; }
   isRight(): boolean { return false; }
   placeBomb(): boolean { return false; }
 }
-class Down implements Input9 {
+export class Down implements Input {
   isUp(): boolean { return false; }
   isDown(): boolean { return true; }
   isLeft(): boolean { return false; }
   isRight(): boolean { return false; }
   placeBomb(): boolean { return false; }
 }
-class Left implements Input9 {
+export class Left implements Input {
   isUp(): boolean { return false; }
   isDown(): boolean { return false; }
   isLeft(): boolean { return true; }
   isRight(): boolean { return false; }
   placeBomb(): boolean { return false; }
 }
-class Right implements Input9 {
+export class Right implements Input {
   isUp(): boolean { return false; }
   isDown(): boolean { return false; }
   isLeft(): boolean { return false; }
   isRight(): boolean { return true; }
   placeBomb(): boolean { return false; }
 }
-class Place implements Input9 {
+export class Place implements Input {
   isUp(): boolean { return false; }
   isDown(): boolean { return false; }
   isLeft(): boolean { return false; }
@@ -135,11 +135,11 @@ function placeBomb() {
 function update() {
   while (!gameOver && inputs.length > 0) {
     let current = inputs.pop();
-    if (current === Input.LEFT) move(-1, 0);
-    else if (current === Input.RIGHT) move(1, 0);
-    else if (current === Input.UP) move(0, -1);
-    else if (current === Input.DOWN) move(0, 1);
-    else if (current === Input.PLACE) placeBomb();
+    if (current?.isLeft() === new Left().isLeft()) move(-1, 0);
+    else if (current?.isRight() === new Right().isRight()) move(1, 0);
+    else if (current?.isUp() === new Up().isUp()) move(0, -1);
+    else if (current?.isDown() === new Down().isDown()) move(0, 1);
+    else if (current?.placeBomb() === new Place().placeBomb()) placeBomb();
   }
 
   if (
@@ -267,11 +267,11 @@ function browserMain() {
 
 
   window.addEventListener("keydown", (e) => {
-    if (e.key === LEFT_KEY || e.key === "a") inputs.push(Input.LEFT);
-    else if (e.key === UP_KEY || e.key === "w") inputs.push(Input.UP);
-    else if (e.key === RIGHT_KEY || e.key === "d") inputs.push(Input.RIGHT);
-    else if (e.key === DOWN_KEY || e.key === "s") inputs.push(Input.DOWN);
-    else if (e.key === " ") inputs.push(Input.PLACE);
+    if (e.key === LEFT_KEY || e.key === "a") inputs.push(new Left());
+    else if (e.key === UP_KEY || e.key === "w") inputs.push(new Up());
+    else if (e.key === RIGHT_KEY || e.key === "d") inputs.push(new Right());
+    else if (e.key === DOWN_KEY || e.key === "s") inputs.push(new Down());
+    else if (e.key === " ") inputs.push(new Place());
   });
 }
 
@@ -280,7 +280,7 @@ if (typeof document !== "undefined") browserMain();
 
 
 
-export { map, inputs, Input, update, delay };
+export { map, inputs,  update, delay };
 export { Tile };
 
 export function resetDelay() {delay = 0}
