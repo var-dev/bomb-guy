@@ -22,14 +22,6 @@ enum Tile {
   MONSTER_LEFT,
 }
 
-enum Input1 {
-  UP,
-  DOWN,
-  LEFT,
-  RIGHT,
-  PLACE,
-}
-
 export interface Input {
   isUp(): boolean,
   isDown(): boolean,
@@ -77,7 +69,12 @@ export class Place implements Input {
   isLeft(): boolean { return false; }
   isRight(): boolean { return false; }
   isPlaceBomb(): boolean { return true; }
-  move(): void { placeBomb() }
+  move(): void { 
+    if (bombs > 0) {
+      map[playery][playerx] = Tile.BOMB;
+      bombs--;
+    }
+  }
 }
 
 
@@ -131,81 +128,79 @@ function move(x: number, y: number) {
   }
 }
 
-function placeBomb() {
-  if (bombs > 0) {
-    map[playery][playerx] = Tile.BOMB;
-    bombs--;
-  }
-}
-
 function update() {
   while (!gameOver && inputs.length > 0) {
-    let current = inputs.pop();
-    current?.move()
+    (inputs.pop())?.move()
   }
 
-  if (
-    map[playery][playerx] === Tile.FIRE ||
-    map[playery][playerx] === Tile.MONSTER_DOWN ||
-    map[playery][playerx] === Tile.MONSTER_UP ||
-    map[playery][playerx] === Tile.MONSTER_LEFT ||
-    map[playery][playerx] === Tile.MONSTER_RIGHT
-  )
-    gameOver = true;
+  checkGameOver();
 
   if (--delay > 0) return;
   delay = DELAY;
 
   for (let y = 1; y < map.length; y++) {
     for (let x = 1; x < map[y].length; x++) {
-      if (map[y][x] === Tile.BOMB) {
-        map[y][x] = Tile.BOMB_CLOSE;
-      } else if (map[y][x] === Tile.BOMB_CLOSE) {
-        map[y][x] = Tile.BOMB_REALLY_CLOSE;
-      } else if (map[y][x] === Tile.BOMB_REALLY_CLOSE) {
-        explode(x + 0, y - 1, Tile.FIRE);
-        explode(x + 0, y + 1, Tile.TMP_FIRE);
-        explode(x - 1, y + 0, Tile.FIRE);
-        explode(x + 1, y + 0, Tile.TMP_FIRE);
-        map[y][x] = Tile.FIRE;
-        bombs++;
-      } else if (map[y][x] === Tile.TMP_FIRE) {
-        map[y][x] = Tile.FIRE;
-      } else if (map[y][x] === Tile.FIRE) {
-        map[y][x] = Tile.AIR;
-      } else if (map[y][x] === Tile.TMP_MONSTER_DOWN) {
-        map[y][x] = Tile.MONSTER_DOWN;
-      } else if (map[y][x] === Tile.TMP_MONSTER_RIGHT) {
-        map[y][x] = Tile.MONSTER_RIGHT;
-      } else if (map[y][x] === Tile.MONSTER_RIGHT) {
-        if (map[y][x + 1] === Tile.AIR) {
-          map[y][x] = Tile.AIR;
-          map[y][x + 1] = Tile.TMP_MONSTER_RIGHT;
-        } else {
-          map[y][x] = Tile.MONSTER_DOWN;
-        }
-      } else if (map[y][x] === Tile.MONSTER_DOWN) {
-        if (map[y + 1][x] === Tile.AIR) {
-          map[y][x] = Tile.AIR;
-          map[y + 1][x] = Tile.TMP_MONSTER_DOWN;
-        } else {
-          map[y][x] = Tile.MONSTER_LEFT;
-        }
-      } else if (map[y][x] === Tile.MONSTER_LEFT) {
-        if (map[y][x - 1] === Tile.AIR) {
-          map[y][x] = Tile.AIR;
-          map[y][x - 1] = Tile.MONSTER_LEFT;
-        } else {
-          map[y][x] = Tile.MONSTER_UP;
-        }
-      } else if (map[y][x] === Tile.MONSTER_UP) {
-        if (map[y - 1][x] === Tile.AIR) {
-          map[y][x] = Tile.AIR;
-          map[y - 1][x] = Tile.MONSTER_UP;
-        } else {
-          map[y][x] = Tile.MONSTER_RIGHT;
-        }
-      }
+      tileHandler(y, x);
+    }
+  }
+}
+
+function checkGameOver() {
+  if (map[playery][playerx] === Tile.FIRE ||
+    map[playery][playerx] === Tile.MONSTER_DOWN ||
+    map[playery][playerx] === Tile.MONSTER_UP ||
+    map[playery][playerx] === Tile.MONSTER_LEFT ||
+    map[playery][playerx] === Tile.MONSTER_RIGHT)
+    gameOver = true;
+}
+
+function tileHandler(y: number, x: number) {
+  if (map[y][x] === Tile.BOMB) {
+    map[y][x] = Tile.BOMB_CLOSE;
+  } else if (map[y][x] === Tile.BOMB_CLOSE) {
+    map[y][x] = Tile.BOMB_REALLY_CLOSE;
+  } else if (map[y][x] === Tile.BOMB_REALLY_CLOSE) {
+    explode(x + 0, y - 1, Tile.FIRE);
+    explode(x + 0, y + 1, Tile.TMP_FIRE);
+    explode(x - 1, y + 0, Tile.FIRE);
+    explode(x + 1, y + 0, Tile.TMP_FIRE);
+    map[y][x] = Tile.FIRE;
+    bombs++;
+  } else if (map[y][x] === Tile.TMP_FIRE) {
+    map[y][x] = Tile.FIRE;
+  } else if (map[y][x] === Tile.FIRE) {
+    map[y][x] = Tile.AIR;
+  } else if (map[y][x] === Tile.TMP_MONSTER_DOWN) {
+    map[y][x] = Tile.MONSTER_DOWN;
+  } else if (map[y][x] === Tile.TMP_MONSTER_RIGHT) {
+    map[y][x] = Tile.MONSTER_RIGHT;
+  } else if (map[y][x] === Tile.MONSTER_RIGHT) {
+    if (map[y][x + 1] === Tile.AIR) {
+      map[y][x] = Tile.AIR;
+      map[y][x + 1] = Tile.TMP_MONSTER_RIGHT;
+    } else {
+      map[y][x] = Tile.MONSTER_DOWN;
+    }
+  } else if (map[y][x] === Tile.MONSTER_DOWN) {
+    if (map[y + 1][x] === Tile.AIR) {
+      map[y][x] = Tile.AIR;
+      map[y + 1][x] = Tile.TMP_MONSTER_DOWN;
+    } else {
+      map[y][x] = Tile.MONSTER_LEFT;
+    }
+  } else if (map[y][x] === Tile.MONSTER_LEFT) {
+    if (map[y][x - 1] === Tile.AIR) {
+      map[y][x] = Tile.AIR;
+      map[y][x - 1] = Tile.MONSTER_LEFT;
+    } else {
+      map[y][x] = Tile.MONSTER_UP;
+    }
+  } else if (map[y][x] === Tile.MONSTER_UP) {
+    if (map[y - 1][x] === Tile.AIR) {
+      map[y][x] = Tile.AIR;
+      map[y - 1][x] = Tile.MONSTER_UP;
+    } else {
+      map[y][x] = Tile.MONSTER_RIGHT;
     }
   }
 }
