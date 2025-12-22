@@ -30,6 +30,51 @@ enum Input {
   PLACE,
 }
 
+interface Input9 {
+  isUp(): boolean,
+  isDown(): boolean,
+  isLeft(): boolean,
+  isRight(): boolean,
+  placeBomb(): boolean,
+}
+
+class Up implements Input9 {
+  isUp(): boolean { return true; }
+  isDown(): boolean { return false; }
+  isLeft(): boolean { return false; }
+  isRight(): boolean { return false; }
+  placeBomb(): boolean { return false; }
+}
+class Down implements Input9 {
+  isUp(): boolean { return false; }
+  isDown(): boolean { return true; }
+  isLeft(): boolean { return false; }
+  isRight(): boolean { return false; }
+  placeBomb(): boolean { return false; }
+}
+class Left implements Input9 {
+  isUp(): boolean { return false; }
+  isDown(): boolean { return false; }
+  isLeft(): boolean { return true; }
+  isRight(): boolean { return false; }
+  placeBomb(): boolean { return false; }
+}
+class Right implements Input9 {
+  isUp(): boolean { return false; }
+  isDown(): boolean { return false; }
+  isLeft(): boolean { return false; }
+  isRight(): boolean { return true; }
+  placeBomb(): boolean { return false; }
+}
+class Place implements Input9 {
+  isUp(): boolean { return false; }
+  isDown(): boolean { return false; }
+  isLeft(): boolean { return false; }
+  isRight(): boolean { return false; }
+  placeBomb(): boolean { return true; }
+}
+
+
 let playerx = 1;
 let playery = 1;
 let map: Tile[][] = [
@@ -265,12 +310,12 @@ export function isMonsterThere(): boolean {
   return map.some((row)=>
     row.some((tile)=>{
       return (
-          tile === Tile.MONSTER_UP || 
-          tile === Tile.MONSTER_DOWN || 
-          tile === Tile.MONSTER_LEFT || 
-          tile === Tile.MONSTER_RIGHT ||
-          tile === Tile.TMP_MONSTER_DOWN ||
-          tile === Tile.TMP_MONSTER_RIGHT
-        ) 
+        tile === Tile.MONSTER_UP || 
+        tile === Tile.MONSTER_DOWN || 
+        tile === Tile.MONSTER_LEFT || 
+        tile === Tile.MONSTER_RIGHT ||
+        tile === Tile.TMP_MONSTER_DOWN ||
+        tile === Tile.TMP_MONSTER_RIGHT
+      ) 
   }))
 }
