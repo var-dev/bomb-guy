@@ -235,8 +235,8 @@ if (typeof document !== "undefined") browserMain();
 
 
 
-export {map, inputs, Input, update, delay}
-export {Tile}
+export { map, inputs, Input, update, delay };
+export { Tile };
 
 export function resetDelay() {delay = 0}
 
@@ -244,6 +244,33 @@ export function getMap() {return map}
 
 export function getPlayer() {return {x: playerx, y: playery}}
 export function isGameOver(){ return gameOver}
-export function doUpdates(n: number){
-  for(let i=0; i<n; i++) update()
+export function getMonster(): {x: number, y: number} {
+  let monster: {x: number, y: number} = {x: -1, y: -1}
+  map.some((row, y)=>
+    row.some((tile, x)=>{
+      if (
+          tile === Tile.MONSTER_UP || 
+          tile === Tile.MONSTER_DOWN || 
+          tile === Tile.MONSTER_LEFT || 
+          tile === Tile.MONSTER_RIGHT ||
+          tile === Tile.TMP_MONSTER_DOWN ||
+          tile === Tile.TMP_MONSTER_RIGHT
+        ) {
+        monster =  {x, y}
+      }
+  }))
+  return monster
+}
+export function isMonsterThere(): boolean {
+  return map.some((row)=>
+    row.some((tile)=>{
+      return (
+          tile === Tile.MONSTER_UP || 
+          tile === Tile.MONSTER_DOWN || 
+          tile === Tile.MONSTER_LEFT || 
+          tile === Tile.MONSTER_RIGHT ||
+          tile === Tile.TMP_MONSTER_DOWN ||
+          tile === Tile.TMP_MONSTER_RIGHT
+        ) 
+  }))
 }
