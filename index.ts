@@ -38,6 +38,7 @@ export interface Tile {
   isMonsterDown(): boolean,
   isTmpMonsterDown(): boolean,
   isMonsterLeft(): boolean,
+  draw(y: number, x: number, g: CanvasRenderingContext2D): void;
 }
 export class Air implements Tile {
   isAir(): boolean { return true; }
@@ -55,6 +56,7 @@ export class Air implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
+  draw(y: number, x: number, g: CanvasRenderingContext2D){}
 }
 export class Unbreakable implements Tile {
   isAir(): boolean { return false; }
@@ -72,6 +74,10 @@ export class Unbreakable implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
+  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+    g.fillStyle = "#999999";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
 }
 export class Stone implements Tile {
   isAir(): boolean { return false; }
@@ -89,6 +95,10 @@ export class Stone implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
+  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+    g.fillStyle = "#0000cc";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
 }
 export class Bomb implements Tile {
   isAir(): boolean { return false; }
@@ -106,6 +116,10 @@ export class Bomb implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
+  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+    g.fillStyle = "#770000";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
 }
 export class BombClose implements Tile {
   isAir(): boolean { return false; }
@@ -123,6 +137,10 @@ export class BombClose implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
+  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+    g.fillStyle = "#cc0000";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
 }
 export class BombReallyClose implements Tile {
   isAir(): boolean { return false; }
@@ -140,6 +158,10 @@ export class BombReallyClose implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
+  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+    g.fillStyle = "#ff0000";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
 }
 export class TmpFire implements Tile {
   isAir(): boolean { return false; }
@@ -157,6 +179,7 @@ export class TmpFire implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
+  draw(y: number, x: number, g: CanvasRenderingContext2D){}
 }
 export class Fire implements Tile {
   isAir(): boolean { return false; }
@@ -174,6 +197,10 @@ export class Fire implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
+  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+    g.fillStyle = "#ffcc00";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
 }
 export class ExtraBomb implements Tile {
   isAir(): boolean { return false; }
@@ -191,6 +218,10 @@ export class ExtraBomb implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
+  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+    g.fillStyle = "#00cc00";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
 }
 export class MonsterUp implements Tile {
   isAir(): boolean { return false; }
@@ -208,6 +239,10 @@ export class MonsterUp implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
+  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+    g.fillStyle = "#cc00cc";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
 }
 export class MonsterRight implements Tile {
   isAir(): boolean { return false; }
@@ -225,6 +260,10 @@ export class MonsterRight implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
+  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+    g.fillStyle = "#cc00cc";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
 }
 export class TmpMonsterRight implements Tile {
   isAir(): boolean { return false; }
@@ -242,6 +281,7 @@ export class TmpMonsterRight implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
+  draw(y: number, x: number, g: CanvasRenderingContext2D){}
 }
 export class MonsterDown implements Tile {
   isAir(): boolean { return false; }
@@ -259,6 +299,10 @@ export class MonsterDown implements Tile {
   isMonsterDown(): boolean { return true; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
+  draw(y: number, x: number, g: CanvasRenderingContext2D){
+    g.fillStyle = "#cc00cc";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
 }
 export class TmpMonsterDown implements Tile {
   isAir(): boolean { return false; }
@@ -276,6 +320,7 @@ export class TmpMonsterDown implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return true; }
   isMonsterLeft(): boolean { return false; }
+  draw(y: number, x: number, g: CanvasRenderingContext2D){}
 }
 export class MonsterLeft implements Tile {
   isAir(): boolean { return false; }
@@ -293,6 +338,10 @@ export class MonsterLeft implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return true; }
+  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+    g.fillStyle = "#cc00cc";
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  }
 }
 
 export interface Input {
@@ -550,23 +599,7 @@ function draw() {
   // Draw map
   for (let y = 0; y < gameMap.length; y++) {
     for (let x = 0; x < gameMap[y].length; x++) {
-      if (gameMap[y][x].isUnbreakable() === new Unbreakable().isUnbreakable()) g.fillStyle = "#999999";
-      else if (gameMap[y][x].isStone() === new Stone().isStone()) g.fillStyle = "#0000cc";
-      else if (gameMap[y][x].isExtraBomb() === new ExtraBomb().isExtraBomb()) g.fillStyle = "#00cc00";
-      else if (gameMap[y][x].isFire() === new Fire().isFire()) g.fillStyle = "#ffcc00";
-      else if (
-        gameMap[y][x].isMonsterUp() === new MonsterUp().isMonsterUp() ||
-        gameMap[y][x].isMonsterLeft() === new MonsterLeft().isMonsterLeft() ||
-        gameMap[y][x].isMonsterRight() === new MonsterRight().isMonsterRight() ||
-        gameMap[y][x].isMonsterDown() === new MonsterDown().isMonsterDown() 
-      )
-        g.fillStyle = "#cc00cc";
-      else if (gameMap[y][x].isBomb() === new Bomb().isBomb()) g.fillStyle = "#770000";
-      else if (gameMap[y][x].isBombClose() === new BombClose().isBombClose()) g.fillStyle = "#cc0000";
-      else if (gameMap[y][x].isBombReallyClose() === new BombReallyClose().isBombReallyClose()) g.fillStyle = "#ff0000";
-
-      if (gameMap[y][x].isAir() !== new Air().isAir())
-        g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+      gameMap[y][x].draw(y, x, g);
     }
   }
 
