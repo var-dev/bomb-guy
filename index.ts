@@ -22,6 +22,279 @@ enum Tile {
   MONSTER_LEFT,
 }
 
+export interface Tile9 {
+  isAir(): boolean,
+  isUnbreakable(): boolean,
+  isStone(): boolean,
+  isBomb(): boolean,
+  isBombClose(): boolean,
+  isBombReallyClose(): boolean,
+  isTmpFire(): boolean,
+  isFire(): boolean,
+  isExtraBomb(): boolean,
+  isMonsterUp(): boolean,
+  isMonsterRight(): boolean,
+  isTmpMonsterRight(): boolean,
+  isMonsterDown(): boolean,
+  isTmpMonsterDown(): boolean,
+  isMonsterLeft(): boolean,
+}
+export class Air implements Tile9 {
+  isAir(): boolean { return true; }
+  isUnbreakable(): boolean { return false; }
+  isStone(): boolean { return false; }
+  isBomb(): boolean { return false; }
+  isBombClose(): boolean { return false; }
+  isBombReallyClose(): boolean { return false; }
+  isTmpFire(): boolean { return false; }
+  isFire(): boolean { return false; }
+  isExtraBomb(): boolean { return false; }
+  isMonsterUp(): boolean { return false; }
+  isMonsterRight(): boolean { return false; }
+  isTmpMonsterRight(): boolean { return false; }
+  isMonsterDown(): boolean { return false; }
+  isTmpMonsterDown(): boolean { return false; }
+  isMonsterLeft(): boolean { return false; }
+}
+export class Unbreakable implements Tile9 {
+  isAir(): boolean { return false; }
+  isUnbreakable(): boolean { return true; }
+  isStone(): boolean { return false; }
+  isBomb(): boolean { return false; }
+  isBombClose(): boolean { return false; }
+  isBombReallyClose(): boolean { return false; }
+  isTmpFire(): boolean { return false; }
+  isFire(): boolean { return false; }
+  isExtraBomb(): boolean { return false; }
+  isMonsterUp(): boolean { return false; }
+  isMonsterRight(): boolean { return false; }
+  isTmpMonsterRight(): boolean { return false; }
+  isMonsterDown(): boolean { return false; }
+  isTmpMonsterDown(): boolean { return false; }
+  isMonsterLeft(): boolean { return false; }
+}
+export class Stone implements Tile9 {
+  isAir(): boolean { return false; }
+  isUnbreakable(): boolean { return false; }
+  isStone(): boolean { return true; }
+  isBomb(): boolean { return false; }
+  isBombClose(): boolean { return false; }
+  isBombReallyClose(): boolean { return false; }
+  isTmpFire(): boolean { return false; }
+  isFire(): boolean { return false; }
+  isExtraBomb(): boolean { return false; }
+  isMonsterUp(): boolean { return false; }
+  isMonsterRight(): boolean { return false; }
+  isTmpMonsterRight(): boolean { return false; }
+  isMonsterDown(): boolean { return false; }
+  isTmpMonsterDown(): boolean { return false; }
+  isMonsterLeft(): boolean { return false; }
+}
+export class Bomb implements Tile9 {
+  isAir(): boolean { return false; }
+  isUnbreakable(): boolean { return false; }
+  isStone(): boolean { return false; }
+  isBomb(): boolean { return true; }
+  isBombClose(): boolean { return false; }
+  isBombReallyClose(): boolean { return false; }
+  isTmpFire(): boolean { return false; }
+  isFire(): boolean { return false; }
+  isExtraBomb(): boolean { return false; }
+  isMonsterUp(): boolean { return false; }
+  isMonsterRight(): boolean { return false; }
+  isTmpMonsterRight(): boolean { return false; }
+  isMonsterDown(): boolean { return false; }
+  isTmpMonsterDown(): boolean { return false; }
+  isMonsterLeft(): boolean { return false; }
+}
+export class BombClose implements Tile9 {
+  isAir(): boolean { return false; }
+  isUnbreakable(): boolean { return false; }
+  isStone(): boolean { return false; }
+  isBomb(): boolean { return false; }
+  isBombClose(): boolean { return true; }
+  isBombReallyClose(): boolean { return false; }
+  isTmpFire(): boolean { return false; }
+  isFire(): boolean { return false; }
+  isExtraBomb(): boolean { return false; }
+  isMonsterUp(): boolean { return false; }
+  isMonsterRight(): boolean { return false; }
+  isTmpMonsterRight(): boolean { return false; }
+  isMonsterDown(): boolean { return false; }
+  isTmpMonsterDown(): boolean { return false; }
+  isMonsterLeft(): boolean { return false; }
+}
+export class BombReallyClose implements Tile9 {
+  isAir(): boolean { return false; }
+  isUnbreakable(): boolean { return false; }
+  isStone(): boolean { return false; }
+  isBomb(): boolean { return false; }
+  isBombClose(): boolean { return false; }
+  isBombReallyClose(): boolean { return true; }
+  isTmpFire(): boolean { return false; }
+  isFire(): boolean { return false; }
+  isExtraBomb(): boolean { return false; }
+  isMonsterUp(): boolean { return false; }
+  isMonsterRight(): boolean { return false; }
+  isTmpMonsterRight(): boolean { return false; }
+  isMonsterDown(): boolean { return false; }
+  isTmpMonsterDown(): boolean { return false; }
+  isMonsterLeft(): boolean { return false; }
+}
+export class TmpFire implements Tile9 {
+  isAir(): boolean { return false; }
+  isUnbreakable(): boolean { return false; }
+  isStone(): boolean { return false; }
+  isBomb(): boolean { return false; }
+  isBombClose(): boolean { return false; }
+  isBombReallyClose(): boolean { return false; }
+  isTmpFire(): boolean { return true; }
+  isFire(): boolean { return false; }
+  isExtraBomb(): boolean { return false; }
+  isMonsterUp(): boolean { return false; }
+  isMonsterRight(): boolean { return false; }
+  isTmpMonsterRight(): boolean { return false; }
+  isMonsterDown(): boolean { return false; }
+  isTmpMonsterDown(): boolean { return false; }
+  isMonsterLeft(): boolean { return false; }
+}
+export class Fire implements Tile9 {
+  isAir(): boolean { return false; }
+  isUnbreakable(): boolean { return false; }
+  isStone(): boolean { return false; }
+  isBomb(): boolean { return false; }
+  isBombClose(): boolean { return false; }
+  isBombReallyClose(): boolean { return false; }
+  isTmpFire(): boolean { return false; }
+  isFire(): boolean { return true; }
+  isExtraBomb(): boolean { return false; }
+  isMonsterUp(): boolean { return false; }
+  isMonsterRight(): boolean { return false; }
+  isTmpMonsterRight(): boolean { return false; }
+  isMonsterDown(): boolean { return false; }
+  isTmpMonsterDown(): boolean { return false; }
+  isMonsterLeft(): boolean { return false; }
+}
+export class ExtraBomb implements Tile9 {
+  isAir(): boolean { return false; }
+  isUnbreakable(): boolean { return false; }
+  isStone(): boolean { return false; }
+  isBomb(): boolean { return false; }
+  isBombClose(): boolean { return false; }
+  isBombReallyClose(): boolean { return false; }
+  isTmpFire(): boolean { return false; }
+  isFire(): boolean { return false; }
+  isExtraBomb(): boolean { return true; }
+  isMonsterUp(): boolean { return false; }
+  isMonsterRight(): boolean { return false; }
+  isTmpMonsterRight(): boolean { return false; }
+  isMonsterDown(): boolean { return false; }
+  isTmpMonsterDown(): boolean { return false; }
+  isMonsterLeft(): boolean { return false; }
+}
+export class MonsterUp implements Tile9 {
+  isAir(): boolean { return false; }
+  isUnbreakable(): boolean { return false; }
+  isStone(): boolean { return false; }
+  isBomb(): boolean { return false; }
+  isBombClose(): boolean { return false; }
+  isBombReallyClose(): boolean { return false; }
+  isTmpFire(): boolean { return false; }
+  isFire(): boolean { return false; }
+  isExtraBomb(): boolean { return false; }
+  isMonsterUp(): boolean { return true; }
+  isMonsterRight(): boolean { return false; }
+  isTmpMonsterRight(): boolean { return false; }
+  isMonsterDown(): boolean { return false; }
+  isTmpMonsterDown(): boolean { return false; }
+  isMonsterLeft(): boolean { return false; }
+}
+export class MonsterRight implements Tile9 {
+  isAir(): boolean { return false; }
+  isUnbreakable(): boolean { return false; }
+  isStone(): boolean { return false; }
+  isBomb(): boolean { return false; }
+  isBombClose(): boolean { return false; }
+  isBombReallyClose(): boolean { return false; }
+  isTmpFire(): boolean { return false; }
+  isFire(): boolean { return false; }
+  isExtraBomb(): boolean { return false; }
+  isMonsterUp(): boolean { return false; }
+  isMonsterRight(): boolean { return true; }
+  isTmpMonsterRight(): boolean { return false; }
+  isMonsterDown(): boolean { return false; }
+  isTmpMonsterDown(): boolean { return false; }
+  isMonsterLeft(): boolean { return false; }
+}
+export class TmpMonsterRight implements Tile9 {
+  isAir(): boolean { return false; }
+  isUnbreakable(): boolean { return false; }
+  isStone(): boolean { return false; }
+  isBomb(): boolean { return false; }
+  isBombClose(): boolean { return false; }
+  isBombReallyClose(): boolean { return false; }
+  isTmpFire(): boolean { return false; }
+  isFire(): boolean { return false; }
+  isExtraBomb(): boolean { return false; }
+  isMonsterUp(): boolean { return false; }
+  isMonsterRight(): boolean { return false; }
+  isTmpMonsterRight(): boolean { return true; }
+  isMonsterDown(): boolean { return false; }
+  isTmpMonsterDown(): boolean { return false; }
+  isMonsterLeft(): boolean { return false; }
+}
+export class MonsterDown implements Tile9 {
+  isAir(): boolean { return false; }
+  isUnbreakable(): boolean { return false; }
+  isStone(): boolean { return false; }
+  isBomb(): boolean { return false; }
+  isBombClose(): boolean { return false; }
+  isBombReallyClose(): boolean { return false; }
+  isTmpFire(): boolean { return false; }
+  isFire(): boolean { return false; }
+  isExtraBomb(): boolean { return false; }
+  isMonsterUp(): boolean { return false; }
+  isMonsterRight(): boolean { return false; }
+  isTmpMonsterRight(): boolean { return false; }
+  isMonsterDown(): boolean { return true; }
+  isTmpMonsterDown(): boolean { return false; }
+  isMonsterLeft(): boolean { return false; }
+}
+export class TmpMonsterDown implements Tile9 {
+  isAir(): boolean { return false; }
+  isUnbreakable(): boolean { return false; }
+  isStone(): boolean { return false; }
+  isBomb(): boolean { return false; }
+  isBombClose(): boolean { return false; }
+  isBombReallyClose(): boolean { return false; }
+  isTmpFire(): boolean { return false; }
+  isFire(): boolean { return false; }
+  isExtraBomb(): boolean { return false; }
+  isMonsterUp(): boolean { return false; }
+  isMonsterRight(): boolean { return false; }
+  isTmpMonsterRight(): boolean { return false; }
+  isMonsterDown(): boolean { return false; }
+  isTmpMonsterDown(): boolean { return true; }
+  isMonsterLeft(): boolean { return false; }
+}
+export class MonsterLeft implements Tile9 {
+  isAir(): boolean { return false; }
+  isUnbreakable(): boolean { return false; }
+  isStone(): boolean { return false; }
+  isBomb(): boolean { return false; }
+  isBombClose(): boolean { return false; }
+  isBombReallyClose(): boolean { return false; }
+  isTmpFire(): boolean { return false; }
+  isFire(): boolean { return false; }
+  isExtraBomb(): boolean { return false; }
+  isMonsterUp(): boolean { return false; }
+  isMonsterRight(): boolean { return false; }
+  isTmpMonsterRight(): boolean { return false; }
+  isMonsterDown(): boolean { return false; }
+  isTmpMonsterDown(): boolean { return false; }
+  isMonsterLeft(): boolean { return true; }
+}
+
 export interface Input {
   isUp(): boolean,
   isDown(): boolean,
