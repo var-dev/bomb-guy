@@ -35,7 +35,8 @@ export interface Input {
   isDown(): boolean,
   isLeft(): boolean,
   isRight(): boolean,
-  placeBomb(): boolean,
+  isPlaceBomb(): boolean,
+  move(): void,
 }
 
 export class Up implements Input {
@@ -43,35 +44,40 @@ export class Up implements Input {
   isDown(): boolean { return false; }
   isLeft(): boolean { return false; }
   isRight(): boolean { return false; }
-  placeBomb(): boolean { return false; }
+  isPlaceBomb(): boolean { return false; }
+  move(): void { move(0, -1); }
 }
 export class Down implements Input {
   isUp(): boolean { return false; }
   isDown(): boolean { return true; }
   isLeft(): boolean { return false; }
   isRight(): boolean { return false; }
-  placeBomb(): boolean { return false; }
+  isPlaceBomb(): boolean { return false; }
+  move(): void { move(0, 1); }
 }
 export class Left implements Input {
   isUp(): boolean { return false; }
   isDown(): boolean { return false; }
   isLeft(): boolean { return true; }
   isRight(): boolean { return false; }
-  placeBomb(): boolean { return false; }
+  isPlaceBomb(): boolean { return false; }
+  move(): void { move(-1, 0); }
 }
 export class Right implements Input {
   isUp(): boolean { return false; }
   isDown(): boolean { return false; }
   isLeft(): boolean { return false; }
   isRight(): boolean { return true; }
-  placeBomb(): boolean { return false; }
+  isPlaceBomb(): boolean { return false; }
+  move(): void { move(1, 0); }
 }
 export class Place implements Input {
   isUp(): boolean { return false; }
   isDown(): boolean { return false; }
   isLeft(): boolean { return false; }
   isRight(): boolean { return false; }
-  placeBomb(): boolean { return true; }
+  isPlaceBomb(): boolean { return true; }
+  move(): void { placeBomb() }
 }
 
 
@@ -135,11 +141,7 @@ function placeBomb() {
 function update() {
   while (!gameOver && inputs.length > 0) {
     let current = inputs.pop();
-    if (current?.isLeft() === new Left().isLeft()) move(-1, 0);
-    else if (current?.isRight() === new Right().isRight()) move(1, 0);
-    else if (current?.isUp() === new Up().isUp()) move(0, -1);
-    else if (current?.isDown() === new Down().isDown()) move(0, 1);
-    else if (current?.placeBomb() === new Place().placeBomb()) placeBomb();
+    current?.move()
   }
 
   if (
