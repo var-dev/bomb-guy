@@ -23,24 +23,36 @@ export class Game {
   public static readonly TPS = 2;
   public static readonly DELAY = Game.FPS / Game.TPS;
   private static  inputs: Input[] = [];
-  public static readonly delay = 0;
-  public static readonly bombs = 1;
+  public static delay = 0;
+  public static bombs = 1;
   public static readonly gameOver = false;
+  public static  playerX: number = 1;
+  public static  playerY: number = 1;
   
   private static gameInstance: Game|undefined;
-  private constructor() {}
-  private static gameMap: Tile[][] = [];
-  private static playerX: number = 1;
-  private static playerY: number = 1;
   public static getInstance(): Game {
     if (Game.gameInstance === undefined) {
-      Game.gameInstance = new Game();
+      Game.gameInstance = new Game(convertToGameMap(map));
     }
     return Game.gameInstance;
   }
   public static over() {
     // @ts-ignore
     Game.gameOver = true
+  }
+  private constructor(private _gameMap: Tile[][]) {}
+
+  public getTile(x: number, y: number): Tile {
+    return this._gameMap[y][x];
+  }
+  public setTile(x: number, y: number, tile: Tile): void {
+    this._gameMap[y][x] = tile;
+  }
+  public drawTile(x: number, y: number, g: CanvasRenderingContext2D): void {
+    this._gameMap[y][x].draw(x, y, g)
+  }
+  public transitionTile(x: number, y: number, g: CanvasRenderingContext2D): void {
+    this._gameMap[y][x].transition(x, y)
   }
 
 }
@@ -88,8 +100,8 @@ export class Air implements Tile {
   transition(x: number, y: number){}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){
-    playery += dY;
-    playerx += dX;
+    Game.playerY += dY;
+    Game.playerX += dX;
   }
 }
 export class Unbreakable implements Tile {
@@ -219,7 +231,7 @@ export class BombReallyClose implements Tile {
     explode(x - 1, y + 0, new Fire());
     explode(x + 1, y + 0, new TmpFire());
     gameMap[y][x] = new Fire();
-    bombs++;
+    Game.bombs++;
   }
   isExplosive(){ return true;}
   walkIn(dX: number, dY: number){}
@@ -270,8 +282,8 @@ export class Fire implements Tile {
   transition(x: number, y: number){ gameMap[y][x] = new Air();}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){
-    playery += dY;
-    playerx += dX;
+    Game.playerY += dY;
+    Game.playerX += dX;
   }
 }
 export class ExtraBomb implements Tile {
@@ -298,10 +310,10 @@ export class ExtraBomb implements Tile {
   transition(x: number, y: number){}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){
-    playery += dY;
-    playerx += dX;
-    bombs++;
-    gameMap[playery][playerx] = new Air();
+    Game.playerY += dY;
+    Game.playerX += dX;
+    Game.bombs++;
+    gameMap[Game.playerY][Game.playerX] = new Air();
   }
 }
 export class MonsterUp implements Tile {
@@ -492,7 +504,7 @@ export class Up implements Input {
   isLeft(): boolean { return false; }
   isRight(): boolean { return false; }
   isPlaceBomb(): boolean { return false; }
-  move(): void { gameMap[playery-1][playerx].walkIn(0, -1); }
+  move(): void { gameMap[Game.playerY-1][Game.playerX].walkIn(0, -1); }
 }
 export class Down implements Input {
   isUp(): boolean { return false; }
@@ -500,7 +512,7 @@ export class Down implements Input {
   isLeft(): boolean { return false; }
   isRight(): boolean { return false; }
   isPlaceBomb(): boolean { return false; }
-  move(): void { gameMap[playery+1][playerx].walkIn(0, 1); }
+  move(): void { gameMap[Game.playerY+1][Game.playerX].walkIn(0, 1); }
 }
 export class Left implements Input {
   isUp(): boolean { return false; }
@@ -508,7 +520,7 @@ export class Left implements Input {
   isLeft(): boolean { return true; }
   isRight(): boolean { return false; }
   isPlaceBomb(): boolean { return false; }
-  move(): void { gameMap[playery][playerx-1].walkIn(-1, 0); }
+  move(): void { gameMap[Game.playerY][Game.playerX-1].walkIn(-1, 0); }
 }
 export class Right implements Input {
   isUp(): boolean { return false; }
@@ -516,7 +528,7 @@ export class Right implements Input {
   isLeft(): boolean { return false; }
   isRight(): boolean { return true; }
   isPlaceBomb(): boolean { return false; }
-  move(): void { gameMap[playery][playerx+1].walkIn(1, 0); }
+  move(): void { gameMap[Game.playerY][Game.playerX+1].walkIn(1, 0); }
 }
 export class Place implements Input {
   isUp(): boolean { return false; }
@@ -525,16 +537,13 @@ export class Place implements Input {
   isRight(): boolean { return false; }
   isPlaceBomb(): boolean { return true; }
   move(): void { 
-    if (bombs > 0) {
-      gameMap[playery][playerx] = new Bomb();
-      bombs--;
+    if (Game.bombs > 0) {
+      gameMap[Game.playerY][Game.playerX] = new Bomb();
+      Game.bombs--;
     }
   }
 }
 
-
-let playerx = 1;
-let playery = 1;
 let map: RawTile[][] = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 0, 0, 2, 2, 2, 2, 2, 1],
@@ -612,16 +621,12 @@ export function convertToGameMap(sourceMap: RawTile[][]): Tile[][]{
 
 let inputs: Input[] = [];
 
-let delay = 0;
-let bombs = 1;
-// let gameOver = false;
-
 function explode(x: number, y: number, type: Tile) {
   if (gameMap[y][x].isStone() === new Stone().isStone()) {
     if (Math.random() < 0.01) gameMap[y][x] = new ExtraBomb();
     else gameMap[y][x] = type;
   } else if (gameMap[y][x].isUnbreakable() !== new Unbreakable().isUnbreakable()) {
-    if (gameMap[y][x].isExplosive()) bombs++;
+    if (gameMap[y][x].isExplosive()) Game.bombs++;
     gameMap[y][x] = type;
   }
 }
@@ -631,10 +636,10 @@ function update() {
     (inputs.pop())?.move()
   }
 
-  gameMap[playery][playerx].isGameOver()
+  gameMap[Game.playerY][Game.playerX].isGameOver()
 
-  if (--delay > 0) return;
-  delay = Game.DELAY;
+  if (--Game.delay > 0) return;
+  Game.delay = Game.DELAY;
 
   for (let y = 1; y < gameMap.length; y++) {
     for (let x = 1; x < gameMap[y].length; x++) {
@@ -659,7 +664,7 @@ function draw() {
   // Draw player
   g.fillStyle = "#00ff00";
   if (!Game.gameOver)
-    g.fillRect(playerx * Game.TILE_SIZE, playery * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
+    g.fillRect(Game.playerX * Game.TILE_SIZE, Game.playerY * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
 }
 
 function gameLoop() {
@@ -695,13 +700,13 @@ if (typeof document !== "undefined") browserMain();
 
 
 
-export { map, inputs,  update, delay };
+export { map, inputs,  update, };
 
-export function resetDelay() {delay = 0}
+export function resetDelay() {Game.delay = 0}
 
 export function getMap() {return gameMap}
 
-export function getPlayer() {return {x: playerx, y: playery}}
+export function getPlayer() {return {x: Game.playerX, y: Game.playerY}}
 export function isGameOver(){ return Game.gameOver}
 export function getMonster(): {x: number, y: number} {
   let monster: {x: number, y: number} = {x: -1, y: -1}
