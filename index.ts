@@ -38,8 +38,9 @@ export interface Tile {
   isMonsterDown(): boolean,
   isTmpMonsterDown(): boolean,
   isMonsterLeft(): boolean,
-  draw(y: number, x: number, g: CanvasRenderingContext2D): void,
+  draw(x: number, y: number, g: CanvasRenderingContext2D): void,
   isGameOver(): void,
+  transition(x: number, y: number): void,
 }
 export class Air implements Tile {
   isAir(): boolean { return true; }
@@ -57,8 +58,9 @@ export class Air implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
-  draw(y: number, x: number, g: CanvasRenderingContext2D){}
+  draw(x: number, y: number, g: CanvasRenderingContext2D){}
   isGameOver(){}
+  transition(x: number, y: number){}
 }
 export class Unbreakable implements Tile {
   isAir(): boolean { return false; }
@@ -76,11 +78,12 @@ export class Unbreakable implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
-  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+  draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#999999";
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   isGameOver(){}
+  transition(x: number, y: number){}
 }
 export class Stone implements Tile {
   isAir(): boolean { return false; }
@@ -98,11 +101,12 @@ export class Stone implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
-  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+  draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#0000cc";
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   isGameOver(){}
+  transition(x: number, y: number){}
 }
 export class Bomb implements Tile {
   isAir(): boolean { return false; }
@@ -120,11 +124,12 @@ export class Bomb implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
-  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+  draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#770000";
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   isGameOver(){}
+  transition(x: number, y: number){ gameMap[y][x] = new BombClose();}
 }
 export class BombClose implements Tile {
   isAir(): boolean { return false; }
@@ -142,11 +147,12 @@ export class BombClose implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
-  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+  draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#cc0000";
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   isGameOver(){}
+  transition(x: number, y: number){ gameMap[y][x] = new BombReallyClose();}
 }
 export class BombReallyClose implements Tile {
   isAir(): boolean { return false; }
@@ -164,11 +170,19 @@ export class BombReallyClose implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
-  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+  draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#ff0000";
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   isGameOver(){}
+  transition(x: number, y: number){
+    explode(x + 0, y - 1, new Fire());
+    explode(x + 0, y + 1, new TmpFire());
+    explode(x - 1, y + 0, new Fire());
+    explode(x + 1, y + 0, new TmpFire());
+    gameMap[y][x] = new Fire();
+    bombs++;
+  }
 }
 export class TmpFire implements Tile {
   isAir(): boolean { return false; }
@@ -186,8 +200,9 @@ export class TmpFire implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
-  draw(y: number, x: number, g: CanvasRenderingContext2D){}
+  draw(x: number, y: number, g: CanvasRenderingContext2D){}
   isGameOver(){}
+  transition(x: number, y: number){ gameMap[y][x] = new Fire();}
 }
 export class Fire implements Tile {
   isAir(): boolean { return false; }
@@ -205,11 +220,12 @@ export class Fire implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
-  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+  draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#ffcc00";
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   isGameOver(){ gameOver = true;}
+  transition(x: number, y: number){ gameMap[y][x] = new Air();}
 }
 export class ExtraBomb implements Tile {
   isAir(): boolean { return false; }
@@ -227,11 +243,12 @@ export class ExtraBomb implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
-  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+  draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#00cc00";
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   isGameOver(){}
+  transition(x: number, y: number){}
 }
 export class MonsterUp implements Tile {
   isAir(): boolean { return false; }
@@ -249,11 +266,19 @@ export class MonsterUp implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
-  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+  draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#cc00cc";
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   isGameOver(){ gameOver = true;}
+  transition(x: number, y: number){
+    if (gameMap[y - 1][x].isAir() === new Air().isAir()) {
+      gameMap[y][x] = new Air();
+      gameMap[y - 1][x] = new MonsterUp();
+    } else {
+      gameMap[y][x] = new MonsterRight();
+    }
+  }
 }
 export class MonsterRight implements Tile {
   isAir(): boolean { return false; }
@@ -271,11 +296,19 @@ export class MonsterRight implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
-  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+  draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#cc00cc";
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   isGameOver(){ gameOver = true;}
+  transition(x: number, y: number){
+    if (gameMap[y][x + 1].isAir() === new Air().isAir()) {
+      gameMap[y][x] = new Air();
+      gameMap[y][x + 1] = new TmpMonsterRight();
+    } else {
+      gameMap[y][x] = new MonsterDown();
+    }
+  }
 }
 export class TmpMonsterRight implements Tile {
   isAir(): boolean { return false; }
@@ -293,8 +326,9 @@ export class TmpMonsterRight implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
-  draw(y: number, x: number, g: CanvasRenderingContext2D){}
+  draw(x: number, y: number, g: CanvasRenderingContext2D){}
   isGameOver(){}
+  transition(x: number, y: number){ gameMap[y][x] = new MonsterRight();}
 }
 export class MonsterDown implements Tile {
   isAir(): boolean { return false; }
@@ -312,11 +346,19 @@ export class MonsterDown implements Tile {
   isMonsterDown(): boolean { return true; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return false; }
-  draw(y: number, x: number, g: CanvasRenderingContext2D){
+  draw(x: number, y: number, g: CanvasRenderingContext2D){
     g.fillStyle = "#cc00cc";
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   isGameOver(){ gameOver = true;}
+  transition(x: number, y: number){
+    if (gameMap[y + 1][x].isAir() === new Air().isAir()) {
+      gameMap[y][x] = new Air();
+      gameMap[y + 1][x] = new TmpMonsterDown();
+    } else {
+      gameMap[y][x] = new MonsterLeft();
+    }
+  }
 }
 export class TmpMonsterDown implements Tile {
   isAir(): boolean { return false; }
@@ -334,8 +376,9 @@ export class TmpMonsterDown implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return true; }
   isMonsterLeft(): boolean { return false; }
-  draw(y: number, x: number, g: CanvasRenderingContext2D){}
+  draw(x: number, y: number, g: CanvasRenderingContext2D){}
   isGameOver(){}
+  transition(x: number, y: number){ gameMap[y][x] = new MonsterDown();}
 }
 export class MonsterLeft implements Tile {
   isAir(): boolean { return false; }
@@ -353,11 +396,19 @@ export class MonsterLeft implements Tile {
   isMonsterDown(): boolean { return false; }
   isTmpMonsterDown(): boolean { return false; }
   isMonsterLeft(): boolean { return true; }
-  draw(y: number, x: number, g: CanvasRenderingContext2D){ 
+  draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#cc00cc";
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
   }
   isGameOver(){ gameOver = true;}
+  transition(x: number, y: number){
+    if (gameMap[y][x - 1].isAir() === new Air().isAir()) {
+      gameMap[y][x] = new Air();
+      gameMap[y][x - 1] = new MonsterLeft();
+    } else {
+      gameMap[y][x] = new MonsterUp();
+    }
+  }
 }
 
 export interface Input {
@@ -539,60 +590,9 @@ function update() {
   if (--delay > 0) return;
   delay = DELAY;
 
-  for (let y = 1; y < map.length; y++) {
-    for (let x = 1; x < map[y].length; x++) {
-      tileHandler(y, x);
-    }
-  }
-}
-
-function tileHandler(y: number, x: number) {
-  if (gameMap[y][x].isBomb() === new Bomb().isBomb()) {
-    gameMap[y][x] = new BombClose();
-  } else if (gameMap[y][x].isBombClose() === new BombClose().isBombClose()) {
-    gameMap[y][x] = new BombReallyClose();
-  } else if (gameMap[y][x].isBombReallyClose() === new BombReallyClose().isBombReallyClose()) {
-    explode(x + 0, y - 1, new Fire());
-    explode(x + 0, y + 1, new TmpFire());
-    explode(x - 1, y + 0, new Fire());
-    explode(x + 1, y + 0, new TmpFire());
-    gameMap[y][x] = new Fire();
-    bombs++;
-  } else if (gameMap[y][x].isTmpFire() === new TmpFire().isTmpFire()) {
-    gameMap[y][x] = new Fire();
-  } else if (gameMap[y][x].isFire() === new Fire().isFire()) {
-    gameMap[y][x] = new Air();
-  } else if (gameMap[y][x].isTmpMonsterDown() === new TmpMonsterDown().isTmpMonsterDown()) {
-    gameMap[y][x] = new MonsterDown();
-  } else if (gameMap[y][x].isTmpMonsterRight() === new TmpMonsterRight().isTmpMonsterRight()) {
-    gameMap[y][x] = new MonsterRight();
-  } else if (gameMap[y][x].isMonsterRight() === new MonsterRight().isMonsterRight()) {
-    if (gameMap[y][x + 1].isAir() === new Air().isAir()) {
-      gameMap[y][x] = new Air();
-      gameMap[y][x + 1] = new TmpMonsterRight();
-    } else {
-      gameMap[y][x] = new MonsterDown();
-    }
-  } else if (gameMap[y][x].isMonsterDown() === new MonsterDown().isMonsterDown()) {
-    if (gameMap[y + 1][x].isAir() === new Air().isAir()) {
-      gameMap[y][x] = new Air();
-      gameMap[y + 1][x] = new TmpMonsterDown();
-    } else {
-      gameMap[y][x] = new MonsterLeft();
-    }
-  } else if (gameMap[y][x].isMonsterLeft() === new MonsterLeft().isMonsterLeft()) {
-    if (gameMap[y][x - 1].isAir() === new Air().isAir()) {
-      gameMap[y][x] = new Air();
-      gameMap[y][x - 1] = new MonsterLeft();
-    } else {
-      gameMap[y][x] = new MonsterUp();
-    }
-  } else if (gameMap[y][x].isMonsterUp() === new MonsterUp().isMonsterUp()) {
-    if (gameMap[y - 1][x].isAir() === new Air().isAir()) {
-      gameMap[y][x] = new Air();
-      gameMap[y - 1][x] = new MonsterUp();
-    } else {
-      gameMap[y][x] = new MonsterRight();
+  for (let y = 1; y < gameMap.length; y++) {
+    for (let x = 1; x < gameMap[y].length; x++) {
+      gameMap[y][x].transition(x, y)
     }
   }
 }
@@ -606,7 +606,7 @@ function draw() {
   // Draw map
   for (let y = 0; y < gameMap.length; y++) {
     for (let x = 0; x < gameMap[y].length; x++) {
-      gameMap[y][x].draw(y, x, g);
+      gameMap[y][x].draw(x, y, g);
     }
   }
 
