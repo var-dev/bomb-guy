@@ -338,7 +338,7 @@ export class MonsterUp implements Tile {
   }
   isGameOver(){ Game.over()}
   transition(x: number, y: number){
-    if (gameMap[y - 1][x].isAir() === new Air().isAir()) {
+    if (gameMap[y - 1][x].isAir()) {
       gameMap[y][x] = new Air();
       gameMap[y - 1][x] = new MonsterUp();
     } else {
@@ -370,7 +370,7 @@ export class MonsterRight implements Tile {
   }
   isGameOver(){ Game.over()}
   transition(x: number, y: number){
-    if (gameMap[y][x + 1].isAir() === new Air().isAir()) {
+    if (gameMap[y][x + 1].isAir()) {
       gameMap[y][x] = new Air();
       gameMap[y][x + 1] = new TmpMonsterRight();
     } else {
@@ -424,7 +424,7 @@ export class MonsterDown implements Tile {
   }
   isGameOver(){ Game.over()}
   transition(x: number, y: number){
-    if (gameMap[y + 1][x].isAir() === new Air().isAir()) {
+    if (gameMap[y + 1][x].isAir()) {
       gameMap[y][x] = new Air();
       gameMap[y + 1][x] = new TmpMonsterDown();
     } else {
@@ -478,7 +478,7 @@ export class MonsterLeft implements Tile {
   }
   isGameOver(){ Game.over()}
   transition(x: number, y: number){
-    if (gameMap[y][x - 1].isAir() === new Air().isAir()) {
+    if (gameMap[y][x - 1].isAir()) {
       gameMap[y][x] = new Air();
       gameMap[y][x - 1] = new MonsterLeft();
     } else {
@@ -622,10 +622,10 @@ export function convertToGameMap(sourceMap: RawTile[][]): Tile[][]{
 let inputs: Input[] = [];
 
 function explode(x: number, y: number, type: Tile) {
-  if (gameMap[y][x].isStone() === new Stone().isStone()) {
+  if (gameMap[y][x].isStone()) {
     if (Math.random() < 0.01) gameMap[y][x] = new ExtraBomb();
     else gameMap[y][x] = type;
-  } else if (gameMap[y][x].isUnbreakable() !== new Unbreakable().isUnbreakable()) {
+  } else if (!gameMap[y][x].isUnbreakable()) {
     if (gameMap[y][x].isExplosive()) Game.bombs++;
     gameMap[y][x] = type;
   }
@@ -713,12 +713,12 @@ export function getMonster(): {x: number, y: number} {
   gameMap.some((row, y)=>
     row.some((tile, x)=>{
       if (
-          tile.isMonsterUp() === new MonsterUp().isMonsterUp() || 
-          tile.isMonsterDown() === new MonsterDown().isMonsterDown() || 
-          tile.isMonsterLeft() === new MonsterLeft().isMonsterLeft() || 
-          tile.isMonsterRight() === new MonsterRight().isMonsterRight() ||
-          tile.isTmpMonsterDown() === new TmpMonsterDown().isTmpMonsterDown()||
-          tile.isTmpMonsterRight() === new TmpMonsterRight().isTmpMonsterRight()
+          tile.isMonsterUp() || 
+          tile.isMonsterDown() || 
+          tile.isMonsterLeft() || 
+          tile.isMonsterRight() ||
+          tile.isTmpMonsterDown()||
+          tile.isTmpMonsterRight()
         ) {
         monster =  {x, y}
       }
@@ -729,12 +729,12 @@ export function isMonsterThere(): boolean {
   return gameMap.some((row)=>
     row.some((tile)=>{
       return (
-        tile.isMonsterUp() === new MonsterUp().isMonsterUp() || 
-          tile.isMonsterDown() === new MonsterDown().isMonsterDown() || 
-          tile.isMonsterLeft() === new MonsterLeft().isMonsterLeft() || 
-          tile.isMonsterRight() === new MonsterRight().isMonsterRight() ||
-          tile.isTmpMonsterDown() === new TmpMonsterDown().isTmpMonsterDown()||
-          tile.isTmpMonsterRight() === new TmpMonsterRight().isTmpMonsterRight()
+        tile.isMonsterUp() || 
+          tile.isMonsterDown() || 
+          tile.isMonsterLeft() || 
+          tile.isMonsterRight() ||
+          tile.isTmpMonsterDown() ||
+          tile.isTmpMonsterRight()
       ) 
   }))
 }
