@@ -40,7 +40,7 @@ export class Game {
     // @ts-ignore
     Game.gameOver = true
   }
-  private constructor(private _gameMap: Tile[][]) {}
+  private constructor(public _gameMap: Tile[][]) {}
 
   public getTile(x: number, y: number): Tile {
     return this._gameMap[y][x];
@@ -54,7 +54,9 @@ export class Game {
   public transitionTile(x: number, y: number, g: CanvasRenderingContext2D): void {
     this._gameMap[y][x].transition(x, y)
   }
-
+  public get mapRo(): Tile[][] {
+    return structuredClone(this._gameMap)
+  }
 }
 
 export interface Tile {
@@ -555,7 +557,7 @@ let map: RawTile[][] = [
   [1, 2, 2, 2, 2, 0, 0, 10, 1],
   [1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
-let gameMap: Tile[][] = convertToGameMap(map)
+let gameMap = Game.getInstance()._gameMap
 
 export function convertToGameMap(sourceMap: RawTile[][]): Tile[][]{
   // initialize generatedMap with the same dimensions as sourceMap
