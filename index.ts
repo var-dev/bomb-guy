@@ -41,6 +41,8 @@ export interface Tile {
   draw(x: number, y: number, g: CanvasRenderingContext2D): void,
   isGameOver(): void,
   transition(x: number, y: number): void,
+  isExplosive(): boolean,
+  walkIn(dX: number, dY: number): void
 }
 export class Air implements Tile {
   isAir(): boolean { return true; }
@@ -61,6 +63,11 @@ export class Air implements Tile {
   draw(x: number, y: number, g: CanvasRenderingContext2D){}
   isGameOver(){}
   transition(x: number, y: number){}
+  isExplosive(){ return false;}
+  walkIn(dX: number, dY: number){
+    playery += dY;
+    playerx += dX;
+  }
 }
 export class Unbreakable implements Tile {
   isAir(): boolean { return false; }
@@ -84,6 +91,8 @@ export class Unbreakable implements Tile {
   }
   isGameOver(){}
   transition(x: number, y: number){}
+  isExplosive(){ return false;}
+  walkIn(dX: number, dY: number){}
 }
 export class Stone implements Tile {
   isAir(): boolean { return false; }
@@ -107,6 +116,8 @@ export class Stone implements Tile {
   }
   isGameOver(){}
   transition(x: number, y: number){}
+  isExplosive(){ return false;}
+  walkIn(dX: number, dY: number){}
 }
 export class Bomb implements Tile {
   isAir(): boolean { return false; }
@@ -130,6 +141,8 @@ export class Bomb implements Tile {
   }
   isGameOver(){}
   transition(x: number, y: number){ gameMap[y][x] = new BombClose();}
+  isExplosive(){ return true;}
+  walkIn(dX: number, dY: number){}
 }
 export class BombClose implements Tile {
   isAir(): boolean { return false; }
@@ -153,6 +166,8 @@ export class BombClose implements Tile {
   }
   isGameOver(){}
   transition(x: number, y: number){ gameMap[y][x] = new BombReallyClose();}
+  isExplosive(){ return true;}
+  walkIn(dX: number, dY: number){}
 }
 export class BombReallyClose implements Tile {
   isAir(): boolean { return false; }
@@ -183,6 +198,8 @@ export class BombReallyClose implements Tile {
     gameMap[y][x] = new Fire();
     bombs++;
   }
+  isExplosive(){ return true;}
+  walkIn(dX: number, dY: number){}
 }
 export class TmpFire implements Tile {
   isAir(): boolean { return false; }
@@ -203,6 +220,8 @@ export class TmpFire implements Tile {
   draw(x: number, y: number, g: CanvasRenderingContext2D){}
   isGameOver(){}
   transition(x: number, y: number){ gameMap[y][x] = new Fire();}
+  isExplosive(){ return false;}
+  walkIn(dX: number, dY: number){}
 }
 export class Fire implements Tile {
   isAir(): boolean { return false; }
@@ -226,6 +245,11 @@ export class Fire implements Tile {
   }
   isGameOver(){ gameOver = true;}
   transition(x: number, y: number){ gameMap[y][x] = new Air();}
+  isExplosive(){ return false;}
+  walkIn(dX: number, dY: number){
+    playery += dY;
+    playerx += dX;
+  }
 }
 export class ExtraBomb implements Tile {
   isAir(): boolean { return false; }
@@ -249,6 +273,13 @@ export class ExtraBomb implements Tile {
   }
   isGameOver(){}
   transition(x: number, y: number){}
+  isExplosive(){ return false;}
+  walkIn(dX: number, dY: number){
+    playery += dY;
+    playerx += dX;
+    bombs++;
+    gameMap[playery][playerx] = new Air();
+  }
 }
 export class MonsterUp implements Tile {
   isAir(): boolean { return false; }
@@ -279,6 +310,8 @@ export class MonsterUp implements Tile {
       gameMap[y][x] = new MonsterRight();
     }
   }
+  isExplosive(){ return false;}
+  walkIn(dX: number, dY: number){}
 }
 export class MonsterRight implements Tile {
   isAir(): boolean { return false; }
@@ -309,6 +342,8 @@ export class MonsterRight implements Tile {
       gameMap[y][x] = new MonsterDown();
     }
   }
+  isExplosive(){ return false;}
+  walkIn(dX: number, dY: number){}
 }
 export class TmpMonsterRight implements Tile {
   isAir(): boolean { return false; }
@@ -329,6 +364,8 @@ export class TmpMonsterRight implements Tile {
   draw(x: number, y: number, g: CanvasRenderingContext2D){}
   isGameOver(){}
   transition(x: number, y: number){ gameMap[y][x] = new MonsterRight();}
+  isExplosive(){ return false;}
+  walkIn(dX: number, dY: number){}
 }
 export class MonsterDown implements Tile {
   isAir(): boolean { return false; }
@@ -359,6 +396,8 @@ export class MonsterDown implements Tile {
       gameMap[y][x] = new MonsterLeft();
     }
   }
+  isExplosive(){ return false;}
+  walkIn(dX: number, dY: number){}
 }
 export class TmpMonsterDown implements Tile {
   isAir(): boolean { return false; }
@@ -379,6 +418,8 @@ export class TmpMonsterDown implements Tile {
   draw(x: number, y: number, g: CanvasRenderingContext2D){}
   isGameOver(){}
   transition(x: number, y: number){ gameMap[y][x] = new MonsterDown();}
+  isExplosive(){ return false;}
+  walkIn(dX: number, dY: number){}
 }
 export class MonsterLeft implements Tile {
   isAir(): boolean { return false; }
@@ -409,6 +450,8 @@ export class MonsterLeft implements Tile {
       gameMap[y][x] = new MonsterUp();
     }
   }
+  isExplosive(){ return false;}
+  walkIn(dX: number, dY: number){}
 }
 
 export interface Input {
@@ -426,7 +469,7 @@ export class Up implements Input {
   isLeft(): boolean { return false; }
   isRight(): boolean { return false; }
   isPlaceBomb(): boolean { return false; }
-  move(): void { move(0, -1); }
+  move(): void { gameMap[playery-1][playerx].walkIn(0, -1); }
 }
 export class Down implements Input {
   isUp(): boolean { return false; }
@@ -434,7 +477,7 @@ export class Down implements Input {
   isLeft(): boolean { return false; }
   isRight(): boolean { return false; }
   isPlaceBomb(): boolean { return false; }
-  move(): void { move(0, 1); }
+  move(): void { gameMap[playery+1][playerx].walkIn(0, 1); }
 }
 export class Left implements Input {
   isUp(): boolean { return false; }
@@ -442,7 +485,7 @@ export class Left implements Input {
   isLeft(): boolean { return true; }
   isRight(): boolean { return false; }
   isPlaceBomb(): boolean { return false; }
-  move(): void { move(-1, 0); }
+  move(): void { gameMap[playery][playerx-1].walkIn(-1, 0); }
 }
 export class Right implements Input {
   isUp(): boolean { return false; }
@@ -450,7 +493,7 @@ export class Right implements Input {
   isLeft(): boolean { return false; }
   isRight(): boolean { return true; }
   isPlaceBomb(): boolean { return false; }
-  move(): void { move(1, 0); }
+  move(): void { gameMap[playery][playerx+1].walkIn(1, 0); }
 }
 export class Place implements Input {
   isUp(): boolean { return false; }
@@ -555,28 +598,8 @@ function explode(x: number, y: number, type: Tile) {
     if (Math.random() < 0.01) gameMap[y][x] = new ExtraBomb();
     else gameMap[y][x] = type;
   } else if (gameMap[y][x].isUnbreakable() !== new Unbreakable().isUnbreakable()) {
-    if (
-      gameMap[y][x].isBomb() === new Bomb().isBomb() ||
-      gameMap[y][x].isBombClose() === new BombClose().isBombClose() ||
-      gameMap[y][x].isBombReallyClose() === new BombReallyClose().isBombReallyClose()
-    )
-      bombs++;
+    if (gameMap[y][x].isExplosive()) bombs++;
     gameMap[y][x] = type;
-  }
-}
-
-function move(x: number, y: number) {
-  if (
-    gameMap[playery + y][playerx + x].isAir() === new Air().isAir() ||
-    gameMap[playery + y][playerx + x].isFire() === new Fire().isFire()
-  ) {
-    playery += y;
-    playerx += x;
-  } else if (gameMap[playery + y][playerx + x].isExtraBomb() === new ExtraBomb().isExtraBomb()) {
-    playery += y;
-    playerx += x;
-    bombs++;
-    gameMap[playery][playerx] = new Air();
   }
 }
 
