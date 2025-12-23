@@ -1,9 +1,3 @@
-const TILE_SIZE = 30;
-const FPS = 30;
-const SLEEP = 1000 / FPS;
-const TPS = 2;
-const DELAY = FPS / TPS;
-
 enum RawTile {
   AIR,
   UNBREAKABLE,
@@ -20,6 +14,35 @@ enum RawTile {
   MONSTER_DOWN,
   TMP_MONSTER_DOWN,
   MONSTER_LEFT,
+}
+
+export class Game {
+  public static readonly TILE_SIZE = 30;
+  public static readonly FPS = 30;
+  public static readonly SLEEP = 1000 / Game.FPS;
+  public static readonly TPS = 2;
+  public static readonly DELAY = Game.FPS / Game.TPS;
+  private static  inputs: Input[] = [];
+  public static readonly delay = 0;
+  public static readonly bombs = 1;
+  public static readonly gameOver = false;
+  
+  private static gameInstance: Game|undefined;
+  private constructor() {}
+  private static gameMap: Tile[][] = [];
+  private static playerX: number = 1;
+  private static playerY: number = 1;
+  public static getInstance(): Game {
+    if (Game.gameInstance === undefined) {
+      Game.gameInstance = new Game();
+    }
+    return Game.gameInstance;
+  }
+  public static over() {
+    // @ts-ignore
+    Game.gameOver = true
+  }
+
 }
 
 export interface Tile {
@@ -87,7 +110,7 @@ export class Unbreakable implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#999999";
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    g.fillRect(x * Game.TILE_SIZE, y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){}
   transition(x: number, y: number){}
@@ -112,7 +135,7 @@ export class Stone implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#0000cc";
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    g.fillRect(x * Game.TILE_SIZE, y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){}
   transition(x: number, y: number){}
@@ -137,7 +160,7 @@ export class Bomb implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#770000";
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    g.fillRect(x * Game.TILE_SIZE, y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){}
   transition(x: number, y: number){ gameMap[y][x] = new BombClose();}
@@ -162,7 +185,7 @@ export class BombClose implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#cc0000";
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    g.fillRect(x * Game.TILE_SIZE, y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){}
   transition(x: number, y: number){ gameMap[y][x] = new BombReallyClose();}
@@ -187,7 +210,7 @@ export class BombReallyClose implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#ff0000";
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    g.fillRect(x * Game.TILE_SIZE, y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){}
   transition(x: number, y: number){
@@ -241,9 +264,9 @@ export class Fire implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#ffcc00";
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    g.fillRect(x * Game.TILE_SIZE, y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
-  isGameOver(){ gameOver = true;}
+  isGameOver(){ Game.over()}
   transition(x: number, y: number){ gameMap[y][x] = new Air();}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){
@@ -269,7 +292,7 @@ export class ExtraBomb implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#00cc00";
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    g.fillRect(x * Game.TILE_SIZE, y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){}
   transition(x: number, y: number){}
@@ -299,9 +322,9 @@ export class MonsterUp implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#cc00cc";
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    g.fillRect(x * Game.TILE_SIZE, y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
-  isGameOver(){ gameOver = true;}
+  isGameOver(){ Game.over()}
   transition(x: number, y: number){
     if (gameMap[y - 1][x].isAir() === new Air().isAir()) {
       gameMap[y][x] = new Air();
@@ -331,9 +354,9 @@ export class MonsterRight implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#cc00cc";
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    g.fillRect(x * Game.TILE_SIZE, y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
-  isGameOver(){ gameOver = true;}
+  isGameOver(){ Game.over()}
   transition(x: number, y: number){
     if (gameMap[y][x + 1].isAir() === new Air().isAir()) {
       gameMap[y][x] = new Air();
@@ -385,9 +408,9 @@ export class MonsterDown implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(x: number, y: number, g: CanvasRenderingContext2D){
     g.fillStyle = "#cc00cc";
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    g.fillRect(x * Game.TILE_SIZE, y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
-  isGameOver(){ gameOver = true;}
+  isGameOver(){ Game.over()}
   transition(x: number, y: number){
     if (gameMap[y + 1][x].isAir() === new Air().isAir()) {
       gameMap[y][x] = new Air();
@@ -439,9 +462,9 @@ export class MonsterLeft implements Tile {
   isMonsterLeft(): boolean { return true; }
   draw(x: number, y: number, g: CanvasRenderingContext2D){ 
     g.fillStyle = "#cc00cc";
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    g.fillRect(x * Game.TILE_SIZE, y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
-  isGameOver(){ gameOver = true;}
+  isGameOver(){ Game.over()}
   transition(x: number, y: number){
     if (gameMap[y][x - 1].isAir() === new Air().isAir()) {
       gameMap[y][x] = new Air();
@@ -591,7 +614,7 @@ let inputs: Input[] = [];
 
 let delay = 0;
 let bombs = 1;
-let gameOver = false;
+// let gameOver = false;
 
 function explode(x: number, y: number, type: Tile) {
   if (gameMap[y][x].isStone() === new Stone().isStone()) {
@@ -604,14 +627,14 @@ function explode(x: number, y: number, type: Tile) {
 }
 
 function update() {
-  while (!gameOver && inputs.length > 0) {
+  while (!Game.gameOver && inputs.length > 0) {
     (inputs.pop())?.move()
   }
 
   gameMap[playery][playerx].isGameOver()
 
   if (--delay > 0) return;
-  delay = DELAY;
+  delay = Game.DELAY;
 
   for (let y = 1; y < gameMap.length; y++) {
     for (let x = 1; x < gameMap[y].length; x++) {
@@ -635,8 +658,8 @@ function draw() {
 
   // Draw player
   g.fillStyle = "#00ff00";
-  if (!gameOver)
-    g.fillRect(playerx * TILE_SIZE, playery * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  if (!Game.gameOver)
+    g.fillRect(playerx * Game.TILE_SIZE, playery * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
 }
 
 function gameLoop() {
@@ -645,15 +668,11 @@ function gameLoop() {
   draw();
   let after = Date.now();
   let frameTime = after - before;
-  let sleep = SLEEP - frameTime;
+  let sleep = Game.SLEEP - frameTime;
   setTimeout(() => gameLoop(), sleep);
 }
 
 
-const LEFT_KEY = "ArrowLeft";
-const UP_KEY = "ArrowUp";
-const RIGHT_KEY = "ArrowRight";
-const DOWN_KEY = "ArrowDown";
 
 
 function browserMain() {
@@ -663,10 +682,10 @@ function browserMain() {
 
 
   window.addEventListener("keydown", (e) => {
-    if (e.key === LEFT_KEY || e.key === "a") inputs.push(new Left());
-    else if (e.key === UP_KEY || e.key === "w") inputs.push(new Up());
-    else if (e.key === RIGHT_KEY || e.key === "d") inputs.push(new Right());
-    else if (e.key === DOWN_KEY || e.key === "s") inputs.push(new Down());
+    if (e.key === "ArrowLeft" || e.key === "a") inputs.push(new Left());
+    else if (e.key === "ArrowUp" || e.key === "w") inputs.push(new Up());
+    else if (e.key === "ArrowRight" || e.key === "d") inputs.push(new Right());
+    else if (e.key === "ArrowDown" || e.key === "s") inputs.push(new Down());
     else if (e.key === " ") inputs.push(new Place());
   });
 }
@@ -683,7 +702,7 @@ export function resetDelay() {delay = 0}
 export function getMap() {return gameMap}
 
 export function getPlayer() {return {x: playerx, y: playery}}
-export function isGameOver(){ return gameOver}
+export function isGameOver(){ return Game.gameOver}
 export function getMonster(): {x: number, y: number} {
   let monster: {x: number, y: number} = {x: -1, y: -1}
   gameMap.some((row, y)=>
