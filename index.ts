@@ -142,6 +142,7 @@ export class Unbreakable implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){ 
     g.fillStyle = "#999999";
+    g.fillRect(this._x * Game.TILE_SIZE, this._y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){}
   transition(){}
@@ -167,6 +168,7 @@ export class Stone implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){ 
     g.fillStyle = "#0000cc";
+    g.fillRect(this._x * Game.TILE_SIZE, this._y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){}
   transition(){}
@@ -192,6 +194,7 @@ export class Bomb implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){ 
     g.fillStyle = "#770000";
+    g.fillRect(this._x * Game.TILE_SIZE, this._y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){}
   transition(){ gameMap[this._y][this._x] = new BombClose(this._x, this._y);}
@@ -217,6 +220,7 @@ export class BombClose implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){ 
     g.fillStyle = "#cc0000";
+    g.fillRect(this._x * Game.TILE_SIZE, this._y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){}
   transition(){ gameMap[this._y][this._x] = new BombReallyClose(this._x, this._y);}
@@ -242,6 +246,7 @@ export class BombReallyClose implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){ 
     g.fillStyle = "#ff0000";
+    g.fillRect(this._x * Game.TILE_SIZE, this._y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){}
   transition(){
@@ -297,6 +302,7 @@ export class Fire implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){ 
     g.fillStyle = "#ffcc00";
+    g.fillRect(this._x * Game.TILE_SIZE, this._y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){ Game.over()}
   transition(){ gameMap[this._y][this._x] = new Air(this._x, this._y);}
@@ -325,6 +331,7 @@ export class ExtraBomb implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){ 
     g.fillStyle = "#00cc00";
+    g.fillRect(this._x * Game.TILE_SIZE, this._y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){}
   transition(){}
@@ -355,6 +362,7 @@ export class MonsterUp implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){ 
     g.fillStyle = "#cc00cc";
+    g.fillRect(this._x * Game.TILE_SIZE, this._y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){ Game.over()}
   transition(){
@@ -387,6 +395,7 @@ export class MonsterRight implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){ 
     g.fillStyle = "#cc00cc";
+    g.fillRect(this._x * Game.TILE_SIZE, this._y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){ Game.over()}
   transition(){
@@ -442,6 +451,7 @@ export class MonsterDown implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){
     g.fillStyle = "#cc00cc";
+    g.fillRect(this._x * Game.TILE_SIZE, this._y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){ Game.over()}
   transition(){
@@ -497,6 +507,7 @@ export class MonsterLeft implements Tile {
   isMonsterLeft(): boolean { return true; }
   draw(g: CanvasRenderingContext2D){ 
     g.fillStyle = "#cc00cc";
+    g.fillRect(this._x * Game.TILE_SIZE, this._y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){ Game.over()}
   transition(){
@@ -661,7 +672,6 @@ function draw() {
   for (let y = 0; y < gameMap.length; y++) {
     for (let x = 0; x < gameMap[y].length; x++) {
       gameMap[y][x].draw(g);
-      g.fillRect(x * Game.TILE_SIZE, y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
     }
   }
 
