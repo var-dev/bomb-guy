@@ -1,11 +1,12 @@
 import {it, describe} from 'node:test'
 import { strict as assert } from 'node:assert'
 
-import { update, inputs, resetDelay, getMap, getPlayer, isGameOver} from '../index'
+import { Game, resetDelay, getMap, getPlayer, isGameOver} from '../index'
 import { Place, Left, Right, Up, Down } from "../index";
 import { convertToGameMap } from '../index';
 import type { Tile } from '../index'
 
+const gameInstance = Game.getInstance()
 
 describe('how the bomb setting off process works', ()=>{
   it('should set the bomb', ()=>{
@@ -20,15 +21,15 @@ describe('how the bomb setting off process works', ()=>{
       [1, 2, 2, 2, 2, 0, 0, 12, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1],
     ]);
-    update()
-    inputs.push(new Right())
-    update()
-    inputs.push(new Place())
-    update()
-    inputs.push(new Left())
-    update()
-    inputs.push(new Down())
-    update()
+    gameInstance.update()
+    Game._inputs.push(new Right())
+    gameInstance.update()
+    Game._inputs.push(new Place())
+    gameInstance.update()
+    Game._inputs.push(new Left())
+    gameInstance.update()
+    Game._inputs.push(new Down())
+    gameInstance.update()
     assert.deepStrictEqual(getMap(), expectedMap)
   })
   it('should get bomb CLOSE', ()=>{
@@ -43,9 +44,9 @@ describe('how the bomb setting off process works', ()=>{
       [1, 2, 2, 2, 2, 0, 0, 14, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1],
     ]);
-    update()
+    gameInstance.update()
     resetDelay()
-    update()
+    gameInstance.update()
     assert.deepStrictEqual(getMap(), expectedMap)
   })
   it('should get BOMB_REALLY_CLOSE', ()=>{
@@ -60,9 +61,9 @@ describe('how the bomb setting off process works', ()=>{
       [1, 2, 2, 2, 2, 0, 14,0, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1],
     ]);
-    update()
+    gameInstance.update()
     resetDelay()
-    update()
+    gameInstance.update()
     assert.deepStrictEqual(getMap(), expectedMap)
   })
   it('should get bomb explosion', ()=>{
@@ -77,9 +78,9 @@ describe('how the bomb setting off process works', ()=>{
       [1, 2, 2, 2, 2, 14,0, 0, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1],
     ]);
-    update()
+    gameInstance.update()
     resetDelay()
-    update()
+    gameInstance.update()
     assert.deepStrictEqual(getMap(), expectedMap)
   })
   it('should clear after bomb explosion', ()=>{
@@ -94,9 +95,9 @@ describe('how the bomb setting off process works', ()=>{
       [1, 2, 2, 2, 2, 9, 0, 0, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1],
     ]);
-    update()
+    gameInstance.update()
     resetDelay()
-    update()
+    gameInstance.update()
     assert.deepStrictEqual(getMap(), expectedMap)
   })
   it('should get current player position', ()=>{
@@ -115,29 +116,29 @@ describe('how the bomb setting off process works', ()=>{
       [1, 2, 2, 2, 2, 0, 0, 0, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1],
     ]);
-    update()
-    inputs.push(new Up())
-    update()
+    gameInstance.update()
+    Game._inputs.push(new Up())
+    gameInstance.update()
     resetDelay()
-    inputs.push(new Right())
-    update()
+    Game._inputs.push(new Right())
+    gameInstance.update()
     resetDelay()
-    inputs.push(new Right())
-    update()
+    Game._inputs.push(new Right())
+    gameInstance.update()
     resetDelay()
-    inputs.push(new Place())
-    update()
+    Game._inputs.push(new Place())
+    gameInstance.update()
     resetDelay()
-    inputs.push(new Left())
-    update()
+    Game._inputs.push(new Left())
+    gameInstance.update()
     resetDelay() // 5 - BOMB_REALLY_CLOSE
     const expectedPlayer = {x: 2, y: 1}
     assert.deepStrictEqual(getPlayer(), expectedPlayer)
 
-    update()
+    gameInstance.update()
     resetDelay() // 1, 0, 7, 7, 7 - FIRE
     
-    update()
+    gameInstance.update()
     resetDelay() // 1, 0, 0, 0, 0 - AIR
     assert.deepStrictEqual(getMap(), expectedMap)
   })

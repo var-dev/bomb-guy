@@ -22,7 +22,7 @@ export class Game {
   public static readonly SLEEP = 1000 / Game.FPS;
   public static readonly TPS = 2;
   public static readonly DELAY = Game.FPS / Game.TPS;
-  private static  inputs: Input[] = [];
+  public static _inputs: Input[] = [];
   public static delay = 0;
   public static bombs = 1;
   public static readonly gameOver = false;
@@ -56,6 +56,22 @@ export class Game {
   }
   public get mapRo(): Tile[][] {
     return structuredClone(this._gameMap)
+  }
+  update() {
+    while (!Game.gameOver && Game._inputs.length > 0) {
+      (Game._inputs.pop())?.move()
+    }
+
+    this._gameMap[Game.playerY][Game.playerX].isGameOver()
+
+    if (--Game.delay > 0) return;
+    Game.delay = Game.DELAY;
+
+    for (let y = 1; y < this._gameMap.length; y++) {
+      for (let x = 1; x < this._gameMap[y].length; x++) {
+        this._gameMap[y][x].transition(x, y)
+      }
+    }
   }
 }
 
@@ -621,8 +637,6 @@ export function convertToGameMap(sourceMap: RawTile[][]): Tile[][]{
 }
 
 
-let inputs: Input[] = [];
-
 function explode(x: number, y: number, type: Tile) {
   if (gameMap[y][x].isStone()) {
     if (Math.random() < 0.01) gameMap[y][x] = new ExtraBomb();
@@ -630,23 +644,6 @@ function explode(x: number, y: number, type: Tile) {
   } else if (!gameMap[y][x].isUnbreakable()) {
     if (gameMap[y][x].isExplosive()) Game.bombs++;
     gameMap[y][x] = type;
-  }
-}
-
-function update() {
-  while (!Game.gameOver && inputs.length > 0) {
-    (inputs.pop())?.move()
-  }
-
-  gameMap[Game.playerY][Game.playerX].isGameOver()
-
-  if (--Game.delay > 0) return;
-  Game.delay = Game.DELAY;
-
-  for (let y = 1; y < gameMap.length; y++) {
-    for (let x = 1; x < gameMap[y].length; x++) {
-      gameMap[y][x].transition(x, y)
-    }
   }
 }
 
@@ -671,7 +668,7 @@ function draw() {
 
 function gameLoop() {
   let before = Date.now();
-  update();
+  Game.getInstance().update();
   draw();
   let after = Date.now();
   let frameTime = after - before;
@@ -689,20 +686,15 @@ function browserMain() {
 
 
   window.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft" || e.key === "a") inputs.push(new Left());
-    else if (e.key === "ArrowUp" || e.key === "w") inputs.push(new Up());
-    else if (e.key === "ArrowRight" || e.key === "d") inputs.push(new Right());
-    else if (e.key === "ArrowDown" || e.key === "s") inputs.push(new Down());
-    else if (e.key === " ") inputs.push(new Place());
+    if (e.key === "ArrowLeft" || e.key === "a") Game._inputs.push(new Left());
+    else if (e.key === "ArrowUp" || e.key === "w") Game._inputs.push(new Up());
+    else if (e.key === "ArrowRight" || e.key === "d") Game._inputs.push(new Right());
+    else if (e.key === "ArrowDown" || e.key === "s") Game._inputs.push(new Down());
+    else if (e.key === " ") Game._inputs.push(new Place());
   });
 }
 
 if (typeof document !== "undefined") browserMain();
-
-
-
-
-export { map, inputs,  update, };
 
 export function resetDelay() {Game.delay = 0}
 
