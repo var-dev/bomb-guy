@@ -52,7 +52,7 @@ export class Game {
     this._gameMap[y][x].draw(g)
   }
   public transitionTile(x: number, y: number, g: CanvasRenderingContext2D): void {
-    this._gameMap[y][x].transition(x, y)
+    this._gameMap[y][x].transition()
   }
   public get mapRo(): Tile[][] {
     return structuredClone(this._gameMap)
@@ -69,7 +69,7 @@ export class Game {
 
     for (let y = 1; y < this._gameMap.length; y++) {
       for (let x = 1; x < this._gameMap[y].length; x++) {
-        this._gameMap[y][x].transition(x, y)
+        this._gameMap[y][x].transition()
       }
     }
   }
@@ -93,7 +93,7 @@ export interface Tile {
   isMonsterLeft(): boolean,
   draw(g: CanvasRenderingContext2D): void,
   isGameOver(): void,
-  transition(x: number, y: number): void,
+  transition(): void,
   isExplosive(): boolean,
   walkIn(dX: number, dY: number): void
 }
@@ -116,7 +116,7 @@ export class Air implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){}
   isGameOver(){}
-  transition(x: number, y: number){}
+  transition(){}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){
     Game.playerY += dY;
@@ -144,7 +144,7 @@ export class Unbreakable implements Tile {
     g.fillStyle = "#999999";
   }
   isGameOver(){}
-  transition(x: number, y: number){}
+  transition(){}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){}
 }
@@ -169,7 +169,7 @@ export class Stone implements Tile {
     g.fillStyle = "#0000cc";
   }
   isGameOver(){}
-  transition(x: number, y: number){}
+  transition(){}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){}
 }
@@ -194,7 +194,7 @@ export class Bomb implements Tile {
     g.fillStyle = "#770000";
   }
   isGameOver(){}
-  transition(x: number, y: number){ gameMap[y][x] = new BombClose(x, y);}
+  transition(){ gameMap[this._y][this._x] = new BombClose(this._x, this._y);}
   isExplosive(){ return true;}
   walkIn(dX: number, dY: number){}
 }
@@ -219,7 +219,7 @@ export class BombClose implements Tile {
     g.fillStyle = "#cc0000";
   }
   isGameOver(){}
-  transition(x: number, y: number){ gameMap[y][x] = new BombReallyClose(x, y);}
+  transition(){ gameMap[this._y][this._x] = new BombReallyClose(this._x, this._y);}
   isExplosive(){ return true;}
   walkIn(dX: number, dY: number){}
 }
@@ -244,12 +244,12 @@ export class BombReallyClose implements Tile {
     g.fillStyle = "#ff0000";
   }
   isGameOver(){}
-  transition(x: number, y: number){
-    explode(x + 0, y - 1, new Fire(x, y - 1));
-    explode(x + 0, y + 1, new TmpFire(x, y + 1));
-    explode(x - 1, y + 0, new Fire(x - 1, y));
-    explode(x + 1, y + 0, new TmpFire(x + 1, y));
-    gameMap[y][x] = new Fire(x, y);
+  transition(){
+    explode(this._x + 0, this._y - 1, new Fire(this._x, this._y - 1));
+    explode(this._x + 0, this._y + 1, new TmpFire(this._x, this._y + 1));
+    explode(this._x - 1, this._y + 0, new Fire(this._x - 1, this._y));
+    explode(this._x + 1, this._y + 0, new TmpFire(this._x + 1, this._y));
+    gameMap[this._y][this._x] = new Fire(this._x, this._y);
     Game.bombs++;
   }
   isExplosive(){ return true;}
@@ -274,7 +274,7 @@ export class TmpFire implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){}
   isGameOver(){}
-  transition(x: number, y: number){ gameMap[y][x] = new Fire(x, y);}
+  transition(){ gameMap[this._y][this._x] = new Fire(this._x, this._y);}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){}
 }
@@ -299,7 +299,7 @@ export class Fire implements Tile {
     g.fillStyle = "#ffcc00";
   }
   isGameOver(){ Game.over()}
-  transition(x: number, y: number){ gameMap[y][x] = new Air(x, y);}
+  transition(){ gameMap[this._y][this._x] = new Air(this._x, this._y);}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){
     Game.playerY += dY;
@@ -327,7 +327,7 @@ export class ExtraBomb implements Tile {
     g.fillStyle = "#00cc00";
   }
   isGameOver(){}
-  transition(x: number, y: number){}
+  transition(){}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){
     Game.playerY += dY;
@@ -357,12 +357,12 @@ export class MonsterUp implements Tile {
     g.fillStyle = "#cc00cc";
   }
   isGameOver(){ Game.over()}
-  transition(x: number, y: number){
-    if (gameMap[y - 1][x].isAir()) {
-      gameMap[y][x] = new Air(x, y);
-      gameMap[y - 1][x] = new MonsterUp(x, y - 1);
+  transition(){
+    if (gameMap[this._y - 1][this._x].isAir()) {
+      gameMap[this._y][this._x] = new Air(this._x, this._y);
+      gameMap[this._y - 1][this._x] = new MonsterUp(this._x, this._y - 1);
     } else {
-      gameMap[y][x] = new MonsterRight(x, y);
+      gameMap[this._y][this._x] = new MonsterRight(this._x, this._y);
     }
   }
   isExplosive(){ return false;}
@@ -389,12 +389,12 @@ export class MonsterRight implements Tile {
     g.fillStyle = "#cc00cc";
   }
   isGameOver(){ Game.over()}
-  transition(x: number, y: number){
-    if (gameMap[y][x + 1].isAir()) {
-      gameMap[y][x] = new Air(x, y);
-      gameMap[y][x + 1] = new TmpMonsterRight(x + 1, y);
+  transition(){
+    if (gameMap[this._y][this._x + 1].isAir()) {
+      gameMap[this._y][this._x] = new Air(this._x, this._y);
+      gameMap[this._y][this._x + 1] = new TmpMonsterRight(this._x + 1, this._y);
     } else {
-      gameMap[y][x] = new MonsterDown(x, y);
+      gameMap[this._y][this._x] = new MonsterDown(this._x, this._y);
     }
   }
   isExplosive(){ return false;}
@@ -419,7 +419,7 @@ export class TmpMonsterRight implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){}
   isGameOver(){}
-  transition(x: number, y: number){ gameMap[y][x] = new MonsterRight(x, y);}
+  transition(){ gameMap[this._y][this._x] = new MonsterRight(this._x, this._y);}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){}
 }
@@ -444,12 +444,12 @@ export class MonsterDown implements Tile {
     g.fillStyle = "#cc00cc";
   }
   isGameOver(){ Game.over()}
-  transition(x: number, y: number){
-    if (gameMap[y + 1][x].isAir()) {
-      gameMap[y][x] = new Air(x, y);
-      gameMap[y + 1][x] = new TmpMonsterDown(x, y + 1);
+  transition(){
+    if (gameMap[this._y + 1][this._x].isAir()) {
+      gameMap[this._y][this._x] = new Air(this._x, this._y);
+      gameMap[this._y + 1][this._x] = new TmpMonsterDown(this._x, this._y + 1);
     } else {
-      gameMap[y][x] = new MonsterLeft(x, y);
+      gameMap[this._y][this._x] = new MonsterLeft(this._x, this._y);
     }
   }
   isExplosive(){ return false;}
@@ -474,7 +474,7 @@ export class TmpMonsterDown implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){}
   isGameOver(){}
-  transition(x: number, y: number){ gameMap[y][x] = new MonsterDown(x, y);}
+  transition(){ gameMap[this._y][this._x] = new MonsterDown(this._x, this._y);}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){}
 }
@@ -499,12 +499,12 @@ export class MonsterLeft implements Tile {
     g.fillStyle = "#cc00cc";
   }
   isGameOver(){ Game.over()}
-  transition(x: number, y: number){
-    if (gameMap[y][x - 1].isAir()) {
-      gameMap[y][x] = new Air(x, y);
-      gameMap[y][x - 1] = new MonsterLeft(x - 1, y);
+  transition(){
+    if (gameMap[this._y][this._x - 1].isAir()) {
+      gameMap[this._y][this._x] = new Air(this._x, this._y);
+      gameMap[this._y][this._x - 1] = new MonsterLeft(this._x - 1, this._y);
     } else {
-      gameMap[y][x] = new MonsterUp(x, y);
+      gameMap[this._y][this._x] = new MonsterUp(this._x, this._y);
     }
   }
   isExplosive(){ return false;}
