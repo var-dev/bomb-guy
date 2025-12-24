@@ -42,7 +42,7 @@ describe('how player kills monster with bomb', ()=>{
     
     assert.deepStrictEqual(getPlayer(), { x: 2, y: 1 })
 
-    assert.strictEqual(getMap()[2][1].isAir(), new Air().isAir())
+    assert.ok(getMap()[2][1].isAir())
   })
   it('detonates bomb at 1,3', ()=>{
     gameInstance.update()
@@ -70,7 +70,7 @@ describe('how player kills monster with bomb', ()=>{
     
     assert.deepStrictEqual(getPlayer(), { x: 1, y: 1 })
 
-    assert.strictEqual(getMap()[3][1].isAir(), new Air().isAir())
+    assert.ok(getMap()[3][1].isAir())
   })
   it('detonates bomb at 1,4', ()=>{
     gameInstance.update()
@@ -98,7 +98,7 @@ describe('how player kills monster with bomb', ()=>{
     
     assert.deepStrictEqual(getPlayer(), { x: 1, y: 2 })
 
-    assert.strictEqual(getMap()[4][1].isAir(), new Air().isAir())
+    assert.ok(getMap()[4][1].isAir())
   })
   it('detonates bomb at 1,5', ()=>{
     gameInstance.update()
@@ -126,7 +126,7 @@ describe('how player kills monster with bomb', ()=>{
     
     assert.deepStrictEqual(getPlayer(), { x: 1, y: 3 })
 
-    assert.strictEqual(getMap()[5][1].isAir(), new Air().isAir())
+    assert.ok(getMap()[5][1].isAir())
   })
   it('detonates bomb at 1,6', ()=>{
     gameInstance.update()
@@ -153,7 +153,7 @@ describe('how player kills monster with bomb', ()=>{
     resetDelay()
     
     assert.deepStrictEqual(getPlayer(), { x: 1, y: 4 })
-    assert.strictEqual(getMap()[6][1].isAir(), new Air().isAir())
+    assert.ok(getMap()[6][1].isAir())
   })
   it('detonates bomb at 1,7', ()=>{
     gameInstance.update()
@@ -181,7 +181,7 @@ describe('how player kills monster with bomb', ()=>{
     
     assert.deepStrictEqual(getPlayer(), { x: 1, y: 5 })
 
-    assert.strictEqual(getMap()[7][1].isAir(), new Air().isAir())
+    assert.ok(getMap()[7][1].isAir())
   })
   it('detonates bomb at 2,7', ()=>{
     gameInstance.update()
@@ -209,7 +209,7 @@ describe('how player kills monster with bomb', ()=>{
     
     assert.deepStrictEqual(getPlayer(), { x: 1, y: 6 })
 
-    assert.strictEqual(getMap()[7][2].isAir(), new Air().isAir())
+    assert.ok(getMap()[7][2].isAir())
   })
   it('detonates bomb at 3,7', ()=>{
     Game._inputs.push(new Down())
@@ -232,7 +232,7 @@ describe('how player kills monster with bomb', ()=>{
     resetDelay()
 
     assert.deepStrictEqual(getPlayer(), { x: 1, y: 7 })
-    assert.strictEqual(getMap()[7][4].isAir(),  new Air().isAir())
+    assert.ok(getMap()[7][4].isAir())
   })
   it('expected that monster is at 7,6', ()=>{
     assert.ok(isMonsterThere())
@@ -267,12 +267,12 @@ describe('how player kills monster with bomb', ()=>{
     assert.deepStrictEqual(getMonster(), {x:7, y:7})
   })
   it('expected that bomb is at 5,7', ()=>{
-    assert.strictEqual(getMap()[7][5].isBombClose(), new BombClose().isBombClose())
+    assert.ok(getMap()[7][5].isBombClose())
   })
   it('expected that bomb is BOMB_REALLY_CLOSE)', ()=>{
     gameInstance.update()
     resetDelay()
-    assert.strictEqual(getMap()[7][5].isBombReallyClose(), new BombReallyClose().isBombReallyClose())
+    assert.ok(getMap()[7][5].isBombReallyClose())
   })
   it('expected that monster is at 6,7', ()=>{
     assert.ok(isMonsterThere())
@@ -282,9 +282,9 @@ describe('how player kills monster with bomb', ()=>{
   it('expected that FIRE is at 5,7, 4,7 ans 3,7)', ()=>{
     gameInstance.update()
     resetDelay()
-    assert.strictEqual(getMap()[7][6].isFire(), new Fire().isFire(), `getMap()[7][6] ${getMap()[7][6]}`)
-    assert.strictEqual(getMap()[7][5].isFire(), new Fire().isFire(), `getMap()[7][5] ${getMap()[7][5]}`)
-    assert.strictEqual(getMap()[7][4].isFire(), new Fire().isFire(), `getMap()[7][4] ${getMap()[7][4]}`)
+    assert.ok(getMap()[7][6].isFire(), `getMap()[7][6] ${getMap()[7][6]}`)
+    assert.ok(getMap()[7][5].isFire(), `getMap()[7][5] ${getMap()[7][5]}`)
+    assert.ok(getMap()[7][4].isFire(), `getMap()[7][4] ${getMap()[7][4]}`)
   })
 
   it('should be game over after monster is eaten by fire but it is not', ()=>{

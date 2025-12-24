@@ -98,6 +98,7 @@ export interface Tile {
   walkIn(dX: number, dY: number): void
 }
 export class Air implements Tile {
+  constructor(private _x: number, private _y: number){}
   isAir(): boolean { return true; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -123,6 +124,7 @@ export class Air implements Tile {
   }
 }
 export class Unbreakable implements Tile {
+  constructor(private _x: number, private _y: number){}
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return true; }
   isStone(): boolean { return false; }
@@ -148,6 +150,7 @@ export class Unbreakable implements Tile {
   walkIn(dX: number, dY: number){}
 }
 export class Stone implements Tile {
+  constructor(private _x: number, private _y: number){}
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return true; }
@@ -173,6 +176,7 @@ export class Stone implements Tile {
   walkIn(dX: number, dY: number){}
 }
 export class Bomb implements Tile {
+  constructor(private _x: number, private _y: number){}
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -193,11 +197,12 @@ export class Bomb implements Tile {
     g.fillRect(x * Game.TILE_SIZE, y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){}
-  transition(x: number, y: number){ gameMap[y][x] = new BombClose();}
+  transition(x: number, y: number){ gameMap[y][x] = new BombClose(x, y);}
   isExplosive(){ return true;}
   walkIn(dX: number, dY: number){}
 }
 export class BombClose implements Tile {
+  constructor(private _x: number, private _y: number){}
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -218,11 +223,12 @@ export class BombClose implements Tile {
     g.fillRect(x * Game.TILE_SIZE, y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){}
-  transition(x: number, y: number){ gameMap[y][x] = new BombReallyClose();}
+  transition(x: number, y: number){ gameMap[y][x] = new BombReallyClose(x, y);}
   isExplosive(){ return true;}
   walkIn(dX: number, dY: number){}
 }
 export class BombReallyClose implements Tile {
+  constructor(private _x: number, private _y: number){}
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -244,17 +250,18 @@ export class BombReallyClose implements Tile {
   }
   isGameOver(){}
   transition(x: number, y: number){
-    explode(x + 0, y - 1, new Fire());
-    explode(x + 0, y + 1, new TmpFire());
-    explode(x - 1, y + 0, new Fire());
-    explode(x + 1, y + 0, new TmpFire());
-    gameMap[y][x] = new Fire();
+    explode(x + 0, y - 1, new Fire(x, y - 1));
+    explode(x + 0, y + 1, new TmpFire(x, y + 1));
+    explode(x - 1, y + 0, new Fire(x - 1, y));
+    explode(x + 1, y + 0, new TmpFire(x + 1, y));
+    gameMap[y][x] = new Fire(x, y);
     Game.bombs++;
   }
   isExplosive(){ return true;}
   walkIn(dX: number, dY: number){}
 }
 export class TmpFire implements Tile {
+  constructor(private _x: number, private _y: number){}
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -272,11 +279,12 @@ export class TmpFire implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(x: number, y: number, g: CanvasRenderingContext2D){}
   isGameOver(){}
-  transition(x: number, y: number){ gameMap[y][x] = new Fire();}
+  transition(x: number, y: number){ gameMap[y][x] = new Fire(x, y);}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){}
 }
 export class Fire implements Tile {
+  constructor(private _x: number, private _y: number){}
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -297,7 +305,7 @@ export class Fire implements Tile {
     g.fillRect(x * Game.TILE_SIZE, y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){ Game.over()}
-  transition(x: number, y: number){ gameMap[y][x] = new Air();}
+  transition(x: number, y: number){ gameMap[y][x] = new Air(x, y);}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){
     Game.playerY += dY;
@@ -305,6 +313,7 @@ export class Fire implements Tile {
   }
 }
 export class ExtraBomb implements Tile {
+  constructor(private _x: number, private _y: number){}
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -331,10 +340,11 @@ export class ExtraBomb implements Tile {
     Game.playerY += dY;
     Game.playerX += dX;
     Game.bombs++;
-    gameMap[Game.playerY][Game.playerX] = new Air();
+    gameMap[Game.playerY][Game.playerX] = new Air(Game.playerX, Game.playerY);
   }
 }
 export class MonsterUp implements Tile {
+  constructor(private _x: number, private _y: number){}
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -357,16 +367,17 @@ export class MonsterUp implements Tile {
   isGameOver(){ Game.over()}
   transition(x: number, y: number){
     if (gameMap[y - 1][x].isAir()) {
-      gameMap[y][x] = new Air();
-      gameMap[y - 1][x] = new MonsterUp();
+      gameMap[y][x] = new Air(x, y);
+      gameMap[y - 1][x] = new MonsterUp(x, y - 1);
     } else {
-      gameMap[y][x] = new MonsterRight();
+      gameMap[y][x] = new MonsterRight(x, y);
     }
   }
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){}
 }
 export class MonsterRight implements Tile {
+  constructor(private _x: number, private _y: number){}
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -389,16 +400,17 @@ export class MonsterRight implements Tile {
   isGameOver(){ Game.over()}
   transition(x: number, y: number){
     if (gameMap[y][x + 1].isAir()) {
-      gameMap[y][x] = new Air();
-      gameMap[y][x + 1] = new TmpMonsterRight();
+      gameMap[y][x] = new Air(x, y);
+      gameMap[y][x + 1] = new TmpMonsterRight(x + 1, y);
     } else {
-      gameMap[y][x] = new MonsterDown();
+      gameMap[y][x] = new MonsterDown(x, y);
     }
   }
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){}
 }
 export class TmpMonsterRight implements Tile {
+  constructor(private _x: number, private _y: number){}
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -416,11 +428,12 @@ export class TmpMonsterRight implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(x: number, y: number, g: CanvasRenderingContext2D){}
   isGameOver(){}
-  transition(x: number, y: number){ gameMap[y][x] = new MonsterRight();}
+  transition(x: number, y: number){ gameMap[y][x] = new MonsterRight(x, y);}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){}
 }
 export class MonsterDown implements Tile {
+  constructor(private _x: number, private _y: number){}
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -443,16 +456,17 @@ export class MonsterDown implements Tile {
   isGameOver(){ Game.over()}
   transition(x: number, y: number){
     if (gameMap[y + 1][x].isAir()) {
-      gameMap[y][x] = new Air();
-      gameMap[y + 1][x] = new TmpMonsterDown();
+      gameMap[y][x] = new Air(x, y);
+      gameMap[y + 1][x] = new TmpMonsterDown(x, y + 1);
     } else {
-      gameMap[y][x] = new MonsterLeft();
+      gameMap[y][x] = new MonsterLeft(x, y);
     }
   }
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){}
 }
 export class TmpMonsterDown implements Tile {
+  constructor(private _x: number, private _y: number){}
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -470,11 +484,12 @@ export class TmpMonsterDown implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(x: number, y: number, g: CanvasRenderingContext2D){}
   isGameOver(){}
-  transition(x: number, y: number){ gameMap[y][x] = new MonsterDown();}
+  transition(x: number, y: number){ gameMap[y][x] = new MonsterDown(x, y);}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){}
 }
 export class MonsterLeft implements Tile {
+  constructor(private _x: number, private _y: number){}
   isAir(): boolean { return false; }
   isUnbreakable(): boolean { return false; }
   isStone(): boolean { return false; }
@@ -497,10 +512,10 @@ export class MonsterLeft implements Tile {
   isGameOver(){ Game.over()}
   transition(x: number, y: number){
     if (gameMap[y][x - 1].isAir()) {
-      gameMap[y][x] = new Air();
-      gameMap[y][x - 1] = new MonsterLeft();
+      gameMap[y][x] = new Air(x, y);
+      gameMap[y][x - 1] = new MonsterLeft(x - 1, y);
     } else {
-      gameMap[y][x] = new MonsterUp();
+      gameMap[y][x] = new MonsterUp(x, y);
     }
   }
   isExplosive(){ return false;}
@@ -556,7 +571,7 @@ export class Place implements Input {
   isPlaceBomb(): boolean { return true; }
   move(): void { 
     if (Game.bombs > 0) {
-      gameMap[Game.playerY][Game.playerX] = new Bomb();
+      gameMap[Game.playerY][Game.playerX] = new Bomb(Game.playerX, Game.playerY);
       Game.bombs--;
     }
   }
@@ -577,55 +592,55 @@ let gameMap = Game.getInstance()._gameMap
 
 export function convertToGameMap(sourceMap: RawTile[][]): Tile[][]{
   // initialize generatedMap with the same dimensions as sourceMap
-  let generatedMap: Tile[][] = sourceMap.map(row => row.map(() => new Unbreakable()));
+  let generatedMap: Tile[][] = sourceMap.map((row, y) => row.map((_, x) => new Unbreakable(x, y)));
 
   for (let y = 0; y < sourceMap.length; y++) {
     for (let x = 0; x < sourceMap[y].length; x++) {
       switch (sourceMap[y][x]){
         case RawTile.AIR:
-          generatedMap[y][x] = new Air()
+          generatedMap[y][x] = new Air(x, y)
           break;
         case RawTile.UNBREAKABLE:
-          generatedMap[y][x] = new Unbreakable()
+          generatedMap[y][x] = new Unbreakable(x, y)
           break;
         case RawTile.STONE:
-          generatedMap[y][x] = new Stone()
+          generatedMap[y][x] = new Stone(x, y)
           break;
         case RawTile.BOMB:
-          generatedMap[y][x] = new Bomb()
+          generatedMap[y][x] = new Bomb(x, y)
           break;
         case RawTile.BOMB_CLOSE:
-          generatedMap[y][x] = new BombClose()
+          generatedMap[y][x] = new BombClose(x, y)
           break;
         case RawTile.BOMB_REALLY_CLOSE:
-          generatedMap[y][x] = new BombReallyClose()
+          generatedMap[y][x] = new BombReallyClose(x, y)
           break;
         case RawTile.TMP_FIRE:
-          generatedMap[y][x] = new TmpFire()
+          generatedMap[y][x] = new TmpFire(x, y)
           break;
         case RawTile.FIRE:
-          generatedMap[y][x] = new Fire()
+          generatedMap[y][x] = new Fire(x, y)
           break;
         case RawTile.EXTRA_BOMB:
-          generatedMap[y][x] = new ExtraBomb()
+          generatedMap[y][x] = new ExtraBomb(x, y)
           break;
         case RawTile.MONSTER_UP:
-          generatedMap[y][x] = new MonsterUp()
+          generatedMap[y][x] = new MonsterUp(x, y)
           break;
         case RawTile.MONSTER_RIGHT:
-          generatedMap[y][x] = new MonsterRight()
+          generatedMap[y][x] = new MonsterRight(x, y)
           break;
         case RawTile.TMP_MONSTER_RIGHT:
-          generatedMap[y][x] = new TmpMonsterRight()
+          generatedMap[y][x] = new TmpMonsterRight(x, y)
           break;
         case RawTile.MONSTER_DOWN:
-          generatedMap[y][x] = new MonsterDown()
+          generatedMap[y][x] = new MonsterDown(x, y)
           break;
         case RawTile.TMP_MONSTER_DOWN:
-          generatedMap[y][x] = new TmpMonsterDown()
+          generatedMap[y][x] = new TmpMonsterDown(x, y)
           break;
         case RawTile.MONSTER_LEFT:
-          generatedMap[y][x] = new MonsterLeft()
+          generatedMap[y][x] = new MonsterLeft(x, y)
           break;
         default:
           ((value: never)=>{
@@ -639,7 +654,7 @@ export function convertToGameMap(sourceMap: RawTile[][]): Tile[][]{
 
 function explode(x: number, y: number, type: Tile) {
   if (gameMap[y][x].isStone()) {
-    if (Math.random() < 0.01) gameMap[y][x] = new ExtraBomb();
+    if (Math.random() < 0.01) gameMap[y][x] = new ExtraBomb(x, y);
     else gameMap[y][x] = type;
   } else if (!gameMap[y][x].isUnbreakable()) {
     if (gameMap[y][x].isExplosive()) Game.bombs++;
