@@ -7,6 +7,7 @@ import { convertToGameMap } from '../index';
 import type { Tile } from '../index'
 
 const gameInstance = Game.getInstance()
+Game.randomFunction = ()=>false
 
 describe('how the bomb setting off process works', ()=>{
   it('should set the bomb', ()=>{

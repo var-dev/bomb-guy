@@ -19,6 +19,7 @@ const expectedMap: Tile[][] = convertToGameMap([
 
 // assert.deepStrictEqual(getMap(), [])
 const gameInstance = Game.getInstance()
+Game.randomFunction = ()=>false
 
 describe('how monster interactions kill player', ()=>{
   it('detonates bomb at 2,1', ()=>{

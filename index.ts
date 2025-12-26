@@ -30,7 +30,7 @@ export class Game {
   public static readonly gameOver = false;
   public static  playerX: number = 1;
   public static  playerY: number = 1;
-  
+  public static randomFunction = ()=> Math.random() < 0.1;
   private static gameInstance: Game|undefined;
   public static getInstance(): Game {
     if (Game.gameInstance === undefined) {
@@ -128,13 +128,13 @@ export class Game {
   }
   explode(x: number, y: number, type: TileConstructor) {
     if (this.getTile(x, y).isStone()) {
-      if (Math.random() < 0.21) {
+      if (Game.randomFunction()) {
         this.setTile(x, y, ExtraBomb);
       }
-      else Game.getInstance().setTile(x, y, type);
-    } else if (!Game.getInstance().getTile(x, y).isUnbreakable()) {
-      if (Game.getInstance().getTile(x, y).isExplosive()) Game.bombs++;
-      Game.getInstance().setTile(x, y, type);
+      else this.setTile(x, y, type);
+    } else if (!this.getTile(x, y).isUnbreakable()) {
+      if (this.getTile(x, y).isExplosive()) Game.bombs++;
+      this.setTile(x, y, type);
     }
   }
 }
@@ -653,6 +653,8 @@ let map: RawTile[][] = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 let gameMap = Game.getInstance()._gameMap
+
+
 
 export function convertToGameMap(sourceMap: RawTile[][]): Tile[][]{
   // initialize generatedMap with the same dimensions as sourceMap
