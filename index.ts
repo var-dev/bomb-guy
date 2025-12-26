@@ -45,8 +45,8 @@ export class Game {
   public getTile(x: number, y: number): Tile {
     return this._gameMap[y][x];
   }
-  public setTile(x: number, y: number, tile: Tile): void {
-    this._gameMap[y][x] = tile;
+  public setTile(x: number, y: number, tileConstructor: new (x: number, y: number) => Tile): void {
+    this._gameMap[y][x] = new tileConstructor(x, y);
   }
   public drawTile(x: number, y: number, g: CanvasRenderingContext2D): void {
     this._gameMap[y][x].draw(g)
@@ -197,7 +197,7 @@ export class Bomb implements Tile {
     g.fillRect(this._x * Game.TILE_SIZE, this._y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){}
-  transition(){ Game.getInstance().setTile(this._x, this._y, new BombClose(this._x, this._y));}
+  transition(){ Game.getInstance().setTile(this._x, this._y, BombClose);}
   isExplosive(){ return true;}
   walkIn(dX: number, dY: number){}
 }
@@ -223,7 +223,7 @@ export class BombClose implements Tile {
     g.fillRect(this._x * Game.TILE_SIZE, this._y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){}
-  transition(){ Game.getInstance().setTile(this._x, this._y, new BombReallyClose(this._x, this._y));}
+  transition(){ Game.getInstance().setTile(this._x, this._y, BombReallyClose);}
   isExplosive(){ return true;}
   walkIn(dX: number, dY: number){}
 }
@@ -254,7 +254,7 @@ export class BombReallyClose implements Tile {
     explode(this._x + 0, this._y + 1, new TmpFire(this._x, this._y + 1));
     explode(this._x - 1, this._y + 0, new Fire(this._x - 1, this._y));
     explode(this._x + 1, this._y + 0, new TmpFire(this._x + 1, this._y));
-    Game.getInstance().setTile(this._x, this._y, new Fire(this._x, this._y));
+    Game.getInstance().setTile(this._x, this._y, Fire);
     Game.bombs++;
   }
   isExplosive(){ return true;}
@@ -279,7 +279,7 @@ export class TmpFire implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){}
   isGameOver(){}
-  transition(){ Game.getInstance().setTile(this._x, this._y, new Fire(this._x, this._y));}
+  transition(){ Game.getInstance().setTile(this._x, this._y, Fire);}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){}
 }
@@ -305,7 +305,7 @@ export class Fire implements Tile {
     g.fillRect(this._x * Game.TILE_SIZE, this._y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){ Game.over()}
-  transition(){ Game.getInstance().setTile(this._x, this._y, new Air(this._x, this._y));}
+  transition(){ Game.getInstance().setTile(this._x, this._y, Air);}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){
     Game.playerY += dY;
@@ -340,7 +340,7 @@ export class ExtraBomb implements Tile {
     Game.playerY += dY;
     Game.playerX += dX;
     Game.bombs++;
-    Game.getInstance().setTile(Game.playerX, Game.playerX, new Air(Game.playerX, Game.playerY));
+    Game.getInstance().setTile(Game.playerX, Game.playerX, Air);
   }
 }
 export class MonsterUp implements Tile {
@@ -367,10 +367,10 @@ export class MonsterUp implements Tile {
   isGameOver(){ Game.over()}
   transition(){
     if (Game.getInstance().getTile(this._x, this._y - 1).isAir()) {
-      Game.getInstance().setTile(this._x, this._y, new Air(this._x, this._y));
-      Game.getInstance().setTile(this._x, this._y - 1 , new MonsterUp(this._x, this._y - 1));
+      Game.getInstance().setTile(this._x, this._y, Air);
+      Game.getInstance().setTile(this._x, this._y - 1 , MonsterUp);
     } else {
-      Game.getInstance().setTile(this._x, this._y, new MonsterRight(this._x, this._y));
+      Game.getInstance().setTile(this._x, this._y, MonsterRight);
     }
   }
   isExplosive(){ return false;}
@@ -400,10 +400,10 @@ export class MonsterRight implements Tile {
   isGameOver(){ Game.over()}
   transition(){
     if (Game.getInstance().getTile(this._x + 1, this._y).isAir()) {
-      Game.getInstance().setTile(this._x, this._y, new Air(this._x, this._y));
-      Game.getInstance().setTile(this._x + 1, this._y, new TmpMonsterRight(this._x + 1, this._y));
+      Game.getInstance().setTile(this._x, this._y, Air);
+      Game.getInstance().setTile(this._x + 1, this._y, TmpMonsterRight);
     } else {
-      Game.getInstance().setTile(this._x, this._y, new MonsterDown(this._x, this._y));
+      Game.getInstance().setTile(this._x, this._y, MonsterDown);
     }
   }
   isExplosive(){ return false;}
@@ -428,7 +428,7 @@ export class TmpMonsterRight implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){}
   isGameOver(){}
-  transition(){ Game.getInstance().setTile(this._x, this._y, new MonsterRight(this._x, this._y));}
+  transition(){ Game.getInstance().setTile(this._x, this._y, MonsterRight);}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){}
 }
@@ -456,10 +456,10 @@ export class MonsterDown implements Tile {
   isGameOver(){ Game.over()}
   transition(){
     if (Game.getInstance().getTile(this._x, this._y + 1).isAir()) {
-      Game.getInstance().setTile(this._x, this._y, new Air(this._x, this._y));
-      Game.getInstance().setTile(this._x, this._y + 1, new TmpMonsterDown(this._x, this._y + 1));
+      Game.getInstance().setTile(this._x, this._y, Air);
+      Game.getInstance().setTile(this._x, this._y + 1, TmpMonsterDown);
     } else {
-      Game.getInstance().setTile(this._x, this._y, new MonsterLeft(this._x, this._y));
+      Game.getInstance().setTile(this._x, this._y, MonsterLeft);
     }
   }
   isExplosive(){ return false;}
@@ -484,7 +484,7 @@ export class TmpMonsterDown implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){}
   isGameOver(){}
-  transition(){ Game.getInstance().setTile(this._x, this._y, new MonsterDown(this._x, this._y));}
+  transition(){ Game.getInstance().setTile(this._x, this._y, MonsterDown);}
   isExplosive(){ return false;}
   walkIn(dX: number, dY: number){}
 }
@@ -512,10 +512,10 @@ export class MonsterLeft implements Tile {
   isGameOver(){ Game.over()}
   transition(){  // below swapLeft
     if (Game.getInstance().getTile(this._x - 1, this._y).isAir()) {
-      Game.getInstance().setTile(this._x    , this._y, new Air(this._x, this._y));
-      Game.getInstance().setTile(this._x - 1, this._y, new MonsterLeft(this._x - 1, this._y));
+      Game.getInstance().setTile(this._x    , this._y, Air);
+      Game.getInstance().setTile(this._x - 1, this._y, MonsterLeft);
     } else {
-      Game.getInstance().setTile(this._x, this._y, new MonsterUp(this._x, this._y));
+      Game.getInstance().setTile(this._x, this._y, MonsterUp);
     }
   }
   isExplosive(){ return false;}
@@ -537,7 +537,7 @@ export class Up implements Input {
   isLeft(): boolean { return false; }
   isRight(): boolean { return false; }
   isPlaceBomb(): boolean { return false; }
-  move(): void { gameMap[Game.playerY-1][Game.playerX].walkIn(0, -1); }
+  move(): void { Game.getInstance().getTile(Game.playerX, Game.playerY-1).walkIn(0, -1); }
 }
 export class Down implements Input {
   isUp(): boolean { return false; }
@@ -545,7 +545,7 @@ export class Down implements Input {
   isLeft(): boolean { return false; }
   isRight(): boolean { return false; }
   isPlaceBomb(): boolean { return false; }
-  move(): void { gameMap[Game.playerY+1][Game.playerX].walkIn(0, 1); }
+  move(): void { Game.getInstance().getTile(Game.playerX, Game.playerY+1).walkIn(0, 1); }
 }
 export class Left implements Input {
   isUp(): boolean { return false; }
@@ -553,7 +553,7 @@ export class Left implements Input {
   isLeft(): boolean { return true; }
   isRight(): boolean { return false; }
   isPlaceBomb(): boolean { return false; }
-  move(): void { gameMap[Game.playerY][Game.playerX-1].walkIn(-1, 0); }
+  move(): void { Game.getInstance().getTile(Game.playerX-1, Game.playerY).walkIn(-1, 0); }
 }
 export class Right implements Input {
   isUp(): boolean { return false; }
@@ -561,7 +561,7 @@ export class Right implements Input {
   isLeft(): boolean { return false; }
   isRight(): boolean { return true; }
   isPlaceBomb(): boolean { return false; }
-  move(): void { gameMap[Game.playerY][Game.playerX+1].walkIn(1, 0); }
+  move(): void { Game.getInstance().getTile(Game.playerX+1, Game.playerY).walkIn(1, 0); }
 }
 export class Place implements Input {
   isUp(): boolean { return false; }
@@ -571,7 +571,7 @@ export class Place implements Input {
   isPlaceBomb(): boolean { return true; }
   move(): void { 
     if (Game.bombs > 0) {
-      gameMap[Game.playerY][Game.playerX] = new Bomb(Game.playerX, Game.playerY);
+      Game.getInstance().setTile(Game.playerX, Game.playerY, Bomb);
       Game.bombs--;
     }
   }
@@ -653,11 +653,11 @@ export function convertToGameMap(sourceMap: RawTile[][]): Tile[][]{
 
 
 function explode(x: number, y: number, type: Tile) {
-  if (gameMap[y][x].isStone()) {
-    if (Math.random() < 0.01) gameMap[y][x] = new ExtraBomb(x, y);
+  if (Game.getInstance().getTile(x, y).isStone()) {
+    if (Math.random() < 0.01) Game.getInstance().setTile(x, y, ExtraBomb);
     else gameMap[y][x] = type;
-  } else if (!gameMap[y][x].isUnbreakable()) {
-    if (gameMap[y][x].isExplosive()) Game.bombs++;
+  } else if (!Game.getInstance().getTile(x, y).isUnbreakable()) {
+    if (Game.getInstance().getTile(x, y).isExplosive()) Game.bombs++;
     gameMap[y][x] = type;
   }
 }
@@ -669,17 +669,17 @@ function draw() {
   g.clearRect(0, 0, canvas.width, canvas.height);
 
   // Draw map
-  // Game.getInstance().mapRo.forEach((row, y) => {
-  //   row.forEach((tile, x) => {
-  //     tile.draw(g);
-  //     g.fillRect(x * Game.TILE_SIZE, y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
-  //   });
-  // });
-  for (let y = 0; y < gameMap.length; y++) {
-    for (let x = 0; x < gameMap[y].length; x++) {
-      gameMap[y][x].draw(g);
-    }
-  }
+  Game.getInstance()._gameMap.forEach((row, y) => {
+    row.forEach((tile, x) => {
+      tile.draw(g);
+      // g.fillRect(x * Game.TILE_SIZE, y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
+    });
+  });
+  // for (let y = 0; y < gameMap.length; y++) {
+  //   for (let x = 0; x < gameMap[y].length; x++) {
+  //     gameMap[y][x].draw(g);
+  //   }
+  // }
 
   // Draw player
   g.fillStyle = "#00ff00";
@@ -719,13 +719,13 @@ if (typeof document !== "undefined") browserMain();
 
 export function resetDelay() {Game.delay = 0}
 
-export function getMap() {return gameMap}
+export function getMap() {return Game.getInstance()._gameMap}
 
 export function getPlayer() {return {x: Game.playerX, y: Game.playerY}}
 export function isGameOver(){ return Game.gameOver}
 export function getMonster(): {x: number, y: number} {
   let monster: {x: number, y: number} = {x: -1, y: -1}
-  gameMap.some((row, y)=>
+  Game.getInstance()._gameMap.some((row, y)=>
     row.some((tile, x)=>{
       if (
           tile.isMonsterUp() || 
@@ -741,7 +741,7 @@ export function getMonster(): {x: number, y: number} {
   return monster
 }
 export function isMonsterThere(): boolean {
-  return gameMap.some((row)=>
+  return Game.getInstance()._gameMap.some((row)=>
     row.some((tile)=>{
       return (
         tile.isMonsterUp() || 
