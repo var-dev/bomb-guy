@@ -73,7 +73,22 @@ export class Game {
       }
     }
   }
-}
+  draw(){
+    let canvas = <HTMLCanvasElement>document.getElementById("GameCanvas");
+    let g = canvas.getContext("2d")!;
+    g.clearRect(0, 0, canvas.width, canvas.height);
+    // Draw map
+    this._gameMap.forEach((row) => {
+      row.forEach((tile) => {
+        tile.draw(g);
+      });
+    });
+    // Draw player
+    g.fillStyle = "#00ff00";
+    if (!Game.gameOver)
+      g.fillRect(Game.playerX * Game.TILE_SIZE, Game.playerY * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
+    }
+  }
 
 export interface Tile {
   isAir(): boolean,
@@ -662,42 +677,15 @@ function explode(x: number, y: number, type: Tile) {
   }
 }
 
-function draw() {
-  let canvas = <HTMLCanvasElement>document.getElementById("GameCanvas");
-  let g = canvas.getContext("2d")!;
-
-  g.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Draw map
-  Game.getInstance()._gameMap.forEach((row, y) => {
-    row.forEach((tile, x) => {
-      tile.draw(g);
-      // g.fillRect(x * Game.TILE_SIZE, y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
-    });
-  });
-  // for (let y = 0; y < gameMap.length; y++) {
-  //   for (let x = 0; x < gameMap[y].length; x++) {
-  //     gameMap[y][x].draw(g);
-  //   }
-  // }
-
-  // Draw player
-  g.fillStyle = "#00ff00";
-  if (!Game.gameOver)
-    g.fillRect(Game.playerX * Game.TILE_SIZE, Game.playerY * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
-}
-
 function gameLoop() {
   let before = Date.now();
   Game.getInstance().update();
-  draw();
+  Game.getInstance().draw();
   let after = Date.now();
   let frameTime = after - before;
   let sleep = Game.SLEEP - frameTime;
   setTimeout(() => gameLoop(), sleep);
 }
-
-
 
 
 function browserMain() {
