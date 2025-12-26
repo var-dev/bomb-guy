@@ -3,7 +3,6 @@ import { strict as assert } from 'node:assert'
 
 import { Game, resetDelay, getMap, getPlayer, isGameOver, Air, BombClose, BombReallyClose, Fire} from '../index'
 import { Place, Left, Right, Up, Down } from "../index";
-import { isMonsterThere, getMonster } from "../index";
 import { Tile, convertToGameMap  } from '../index'
 
 const expectedMap: Tile[][] = convertToGameMap([
@@ -235,8 +234,8 @@ describe('how player kills monster with bomb', ()=>{
     assert.ok(getMap()[7][4].isAir())
   })
   it('expected that monster is at 7,6', ()=>{
-    assert.ok(isMonsterThere())
-    assert.deepStrictEqual(getMonster(), {x:7, y:6})
+    assert.ok(Game.getInstance().isMonsterThere())
+    assert.deepStrictEqual(Game.getInstance().getMonster(), {x:7, y:6})
   })
   it('expected that player is at 5,7', ()=>{
     Game._inputs.push(new Right())
@@ -249,8 +248,8 @@ describe('how player kills monster with bomb', ()=>{
   })
 
   it('expected that monster is at 7,7', ()=>{
-    assert.ok(isMonsterThere())
-    assert.deepStrictEqual(getMonster(), {x:7, y:7})
+    assert.ok(Game.getInstance().isMonsterThere())
+    assert.deepStrictEqual(Game.getInstance().getMonster(), {x:7, y:7})
   })
   it('expected that bomb is at 5,7 and player is at 3,7', ()=>{
     Game._inputs.push(new Place())
@@ -263,8 +262,8 @@ describe('how player kills monster with bomb', ()=>{
     assert.deepStrictEqual(getPlayer(), { x: 3, y: 7 })
   })
   it('expected that monster is at 7,7', ()=>{
-    assert.ok(isMonsterThere())
-    assert.deepStrictEqual(getMonster(), {x:7, y:7})
+    assert.ok(Game.getInstance().isMonsterThere())
+    assert.deepStrictEqual(Game.getInstance().getMonster(), {x:7, y:7})
   })
   it('expected that bomb is at 5,7', ()=>{
     assert.ok(getMap()[7][5].isBombClose())
@@ -275,8 +274,8 @@ describe('how player kills monster with bomb', ()=>{
     assert.ok(getMap()[7][5].isBombReallyClose())
   })
   it('expected that monster is at 6,7', ()=>{
-    assert.ok(isMonsterThere())
-    assert.deepStrictEqual(getMonster(), {x:6, y:7})
+    assert.ok(Game.getInstance().isMonsterThere())
+    assert.deepStrictEqual(Game.getInstance().getMonster(), {x:6, y:7})
   })
 
   it('expected that FIRE is at 5,7, 4,7 ans 3,7)', ()=>{
@@ -296,7 +295,7 @@ describe('how player kills monster with bomb', ()=>{
     resetDelay()
     assert.strictEqual(isGameOver(), false)
 
-    assert.ok(!isMonsterThere())
+    assert.ok(!Game.getInstance().isMonsterThere())
   })
 
 })

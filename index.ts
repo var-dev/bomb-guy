@@ -87,8 +87,38 @@ export class Game {
     g.fillStyle = "#00ff00";
     if (!Game.gameOver)
       g.fillRect(Game.playerX * Game.TILE_SIZE, Game.playerY * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
-    }
   }
+  isMonsterThere(): boolean {
+    return this._gameMap.some((row)=>
+      row.some((tile)=>{
+        return (
+          tile.isMonsterUp() || 
+            tile.isMonsterDown() || 
+            tile.isMonsterLeft() || 
+            tile.isMonsterRight() ||
+            tile.isTmpMonsterDown() ||
+            tile.isTmpMonsterRight()
+        ) 
+      }
+  ))}
+  getMonster(): {x: number, y: number} {
+    let monster: {x: number, y: number} = {x: -1, y: -1}
+    this._gameMap.some((row, y)=>
+      row.some((tile, x)=>{
+        if (
+            tile.isMonsterUp() || 
+            tile.isMonsterDown() || 
+            tile.isMonsterLeft() || 
+            tile.isMonsterRight() ||
+            tile.isTmpMonsterDown()||
+            tile.isTmpMonsterRight()
+          ) {
+          monster =  {x, y}
+        }
+    }))
+    return monster
+  }
+}
 
 export interface Tile {
   isAir(): boolean,
@@ -711,33 +741,3 @@ export function getMap() {return Game.getInstance()._gameMap}
 
 export function getPlayer() {return {x: Game.playerX, y: Game.playerY}}
 export function isGameOver(){ return Game.gameOver}
-export function getMonster(): {x: number, y: number} {
-  let monster: {x: number, y: number} = {x: -1, y: -1}
-  Game.getInstance()._gameMap.some((row, y)=>
-    row.some((tile, x)=>{
-      if (
-          tile.isMonsterUp() || 
-          tile.isMonsterDown() || 
-          tile.isMonsterLeft() || 
-          tile.isMonsterRight() ||
-          tile.isTmpMonsterDown()||
-          tile.isTmpMonsterRight()
-        ) {
-        monster =  {x, y}
-      }
-  }))
-  return monster
-}
-export function isMonsterThere(): boolean {
-  return Game.getInstance()._gameMap.some((row)=>
-    row.some((tile)=>{
-      return (
-        tile.isMonsterUp() || 
-          tile.isMonsterDown() || 
-          tile.isMonsterLeft() || 
-          tile.isMonsterRight() ||
-          tile.isTmpMonsterDown() ||
-          tile.isTmpMonsterRight()
-      ) 
-  }))
-}
