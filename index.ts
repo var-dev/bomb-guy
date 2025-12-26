@@ -126,6 +126,17 @@ export class Game {
     }))
     return monster
   }
+  explode(x: number, y: number, type: TileConstructor) {
+    if (this.getTile(x, y).isStone()) {
+      if (Math.random() < 0.01) {
+        this.setTile(x, y, ExtraBomb);
+      }
+      else Game.getInstance().setTile(x, y, type);
+    } else if (!Game.getInstance().getTile(x, y).isUnbreakable()) {
+      if (Game.getInstance().getTile(x, y).isExplosive()) Game.bombs++;
+      Game.getInstance().setTile(x, y, type);
+    }
+  }
 }
 
 export interface Tile {
@@ -303,10 +314,10 @@ export class BombReallyClose implements Tile {
   }
   isGameOver(){}
   transition(){
-    explode(this._x + 0, this._y - 1, Fire);
-    explode(this._x + 0, this._y + 1, TmpFire);
-    explode(this._x - 1, this._y + 0, Fire);
-    explode(this._x + 1, this._y + 0, TmpFire);
+    Game.getInstance().explode(this._x + 0, this._y - 1, Fire);
+    Game.getInstance().explode(this._x + 0, this._y + 1, TmpFire);
+    Game.getInstance().explode(this._x - 1, this._y + 0, Fire);
+    Game.getInstance().explode(this._x + 1, this._y + 0, TmpFire);
     Game.getInstance().setTile(this._x, this._y, Fire);
     Game.bombs++;
   }
@@ -702,17 +713,6 @@ export function convertToGameMap(sourceMap: RawTile[][]): Tile[][]{
     }
   }
   return generatedMap;
-}
-
-
-function explode(x: number, y: number, type: TileConstructor) {
-  if (Game.getInstance().getTile(x, y).isStone()) {
-    if (Math.random() < 0.01) Game.getInstance().setTile(x, y, ExtraBomb);
-    else Game.getInstance().setTile(x, y, type);
-  } else if (!Game.getInstance().getTile(x, y).isUnbreakable()) {
-    if (Game.getInstance().getTile(x, y).isExplosive()) Game.bombs++;
-    Game.getInstance().setTile(x, y, type);
-  }
 }
 
 function gameLoop() {
