@@ -16,6 +16,8 @@ enum RawTile {
   MONSTER_LEFT,
 }
 
+type TileConstructor = new (x: number, y: number) => Tile
+type TilePredicate = (x: number, y: number) => boolean
 export class Game {
   public static readonly TILE_SIZE = 30;
   public static readonly FPS = 30;
@@ -45,8 +47,14 @@ export class Game {
   public getTile(x: number, y: number): Tile {
     return this._gameMap[y][x];
   }
-  public setTile(x: number, y: number, tileConstructor: new (x: number, y: number) => Tile): void {
+  public setTile(x: number, y: number, tileConstructor: TileConstructor): void {
     this._gameMap[y][x] = new tileConstructor(x, y);
+  }
+  public setTilePredicate(x: number, y: number, tileConstructor: TileConstructor, predicate: TilePredicate = ()=>true ): void {
+    if(predicate(x,y)) this._gameMap[y][x] = new tileConstructor(x, y);
+  }
+  public setTileAlternate(x: number, y: number, tileConstructor: TileConstructor, predicate: TilePredicate, alternate: TileConstructor): void {
+    if(predicate(x,y)) this._gameMap[y][x] = new tileConstructor(x, y);
   }
   public drawTile(x: number, y: number, g: CanvasRenderingContext2D): void {
     this._gameMap[y][x].draw(g)
@@ -295,10 +303,10 @@ export class BombReallyClose implements Tile {
   }
   isGameOver(){}
   transition(){
-    explode(this._x + 0, this._y - 1, new Fire(this._x, this._y - 1));
-    explode(this._x + 0, this._y + 1, new TmpFire(this._x, this._y + 1));
-    explode(this._x - 1, this._y + 0, new Fire(this._x - 1, this._y));
-    explode(this._x + 1, this._y + 0, new TmpFire(this._x + 1, this._y));
+    explode(this._x + 0, this._y - 1, Fire);
+    explode(this._x + 0, this._y + 1, TmpFire);
+    explode(this._x - 1, this._y + 0, Fire);
+    explode(this._x + 1, this._y + 0, TmpFire);
     Game.getInstance().setTile(this._x, this._y, Fire);
     Game.bombs++;
   }
@@ -697,13 +705,13 @@ export function convertToGameMap(sourceMap: RawTile[][]): Tile[][]{
 }
 
 
-function explode(x: number, y: number, type: Tile) {
+function explode(x: number, y: number, type: TileConstructor) {
   if (Game.getInstance().getTile(x, y).isStone()) {
     if (Math.random() < 0.01) Game.getInstance().setTile(x, y, ExtraBomb);
-    else gameMap[y][x] = type;
+    else Game.getInstance().setTile(x, y, type);
   } else if (!Game.getInstance().getTile(x, y).isUnbreakable()) {
     if (Game.getInstance().getTile(x, y).isExplosive()) Game.bombs++;
-    gameMap[y][x] = type;
+    Game.getInstance().setTile(x, y, type);
   }
 }
 
