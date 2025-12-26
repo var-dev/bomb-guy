@@ -128,7 +128,7 @@ export class Game {
   }
   explode(x: number, y: number, type: TileConstructor) {
     if (this.getTile(x, y).isStone()) {
-      if (Math.random() < 0.01) {
+      if (Math.random() < 0.21) {
         this.setTile(x, y, ExtraBomb);
       }
       else Game.getInstance().setTile(x, y, type);
@@ -404,7 +404,7 @@ export class ExtraBomb implements Tile {
     Game.playerY += dY;
     Game.playerX += dX;
     Game.bombs++;
-    Game.getInstance().setTile(Game.playerX, Game.playerX, Air);
+    Game.getInstance().setTile(Game.playerX, Game.playerY , Air);
   }
 }
 export class MonsterUp implements Tile {
