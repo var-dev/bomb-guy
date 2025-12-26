@@ -75,11 +75,11 @@ export class Game {
     if (--Game.delay > 0) return;
     Game.delay = Game.DELAY;
 
-    for (let y = 1; y < this._gameMap.length; y++) {
-      for (let x = 1; x < this._gameMap[y].length; x++) {
-        this._gameMap[y][x].transition()
-      }
-    }
+    this._gameMap.forEach((row) => {
+      row.forEach((tile) => {
+        tile.transition();
+      });
+    });
   }
   draw(){
     let canvas = <HTMLCanvasElement>document.getElementById("GameCanvas");
