@@ -159,7 +159,7 @@ export interface Tile {
   isGameOver(): void,
   transition(): void,
   isExplosive(): boolean,
-  walkIn(dX: number, dY: number): void
+  walkIn(): void
 }
 export class Air implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -182,9 +182,9 @@ export class Air implements Tile {
   isGameOver(){}
   transition(){}
   isExplosive(){ return false;}
-  walkIn(dX: number, dY: number){
-    Game.playerY += dY;
-    Game.playerX += dX;
+  walkIn(){
+    Game.playerY = this._y;
+    Game.playerX = this._x;
   }
 }
 export class Unbreakable implements Tile {
@@ -211,7 +211,7 @@ export class Unbreakable implements Tile {
   isGameOver(){}
   transition(){}
   isExplosive(){ return false;}
-  walkIn(dX: number, dY: number){}
+  walkIn(){}
 }
 export class Stone implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -237,7 +237,7 @@ export class Stone implements Tile {
   isGameOver(){}
   transition(){}
   isExplosive(){ return false;}
-  walkIn(dX: number, dY: number){}
+  walkIn(){}
 }
 export class Bomb implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -263,7 +263,7 @@ export class Bomb implements Tile {
   isGameOver(){}
   transition(){ Game.getInstance().setTile(this._x, this._y, BombClose);}
   isExplosive(){ return true;}
-  walkIn(dX: number, dY: number){}
+  walkIn(){}
 }
 export class BombClose implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -289,7 +289,7 @@ export class BombClose implements Tile {
   isGameOver(){}
   transition(){ Game.getInstance().setTile(this._x, this._y, BombReallyClose);}
   isExplosive(){ return true;}
-  walkIn(dX: number, dY: number){}
+  walkIn(){}
 }
 export class BombReallyClose implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -322,7 +322,7 @@ export class BombReallyClose implements Tile {
     Game.bombs++;
   }
   isExplosive(){ return true;}
-  walkIn(dX: number, dY: number){}
+  walkIn(){}
 }
 export class TmpFire implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -345,7 +345,7 @@ export class TmpFire implements Tile {
   isGameOver(){}
   transition(){ Game.getInstance().setTile(this._x, this._y, Fire);}
   isExplosive(){ return false;}
-  walkIn(dX: number, dY: number){}
+  walkIn(){}
 }
 export class Fire implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -371,9 +371,9 @@ export class Fire implements Tile {
   isGameOver(){ Game.over()}
   transition(){ Game.getInstance().setTile(this._x, this._y, Air);}
   isExplosive(){ return false;}
-  walkIn(dX: number, dY: number){
-    Game.playerY += dY;
-    Game.playerX += dX;
+  walkIn(){
+    Game.playerY = this._y;
+    Game.playerX = this._x;
   }
 }
 export class ExtraBomb implements Tile {
@@ -400,9 +400,9 @@ export class ExtraBomb implements Tile {
   isGameOver(){}
   transition(){}
   isExplosive(){ return false;}
-  walkIn(dX: number, dY: number){
-    Game.playerY += dY;
-    Game.playerX += dX;
+  walkIn(){
+    Game.playerY = this._y;
+    Game.playerX = this._x;
     Game.bombs++;
     Game.getInstance().setTile(Game.playerX, Game.playerY , Air);
   }
@@ -438,7 +438,7 @@ export class MonsterUp implements Tile {
     }
   }
   isExplosive(){ return false;}
-  walkIn(dX: number, dY: number){}
+  walkIn(){}
 }
 export class MonsterRight implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -471,7 +471,7 @@ export class MonsterRight implements Tile {
     }
   }
   isExplosive(){ return false;}
-  walkIn(dX: number, dY: number){}
+  walkIn(){}
 }
 export class TmpMonsterRight implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -494,7 +494,7 @@ export class TmpMonsterRight implements Tile {
   isGameOver(){}
   transition(){ Game.getInstance().setTile(this._x, this._y, MonsterRight);}
   isExplosive(){ return false;}
-  walkIn(dX: number, dY: number){}
+  walkIn(){}
 }
 export class MonsterDown implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -527,7 +527,7 @@ export class MonsterDown implements Tile {
     }
   }
   isExplosive(){ return false;}
-  walkIn(dX: number, dY: number){}
+  walkIn(){}
 }
 export class TmpMonsterDown implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -550,7 +550,7 @@ export class TmpMonsterDown implements Tile {
   isGameOver(){}
   transition(){ Game.getInstance().setTile(this._x, this._y, MonsterDown);}
   isExplosive(){ return false;}
-  walkIn(dX: number, dY: number){}
+  walkIn(){}
 }
 export class MonsterLeft implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -583,7 +583,7 @@ export class MonsterLeft implements Tile {
     }
   }
   isExplosive(){ return false;}
-  walkIn(dX: number, dY: number){}
+  walkIn(){}
 }
 
 export interface Input {
@@ -601,7 +601,7 @@ export class Up implements Input {
   isLeft(): boolean { return false; }
   isRight(): boolean { return false; }
   isPlaceBomb(): boolean { return false; }
-  move(): void { Game.getInstance().getTile(Game.playerX, Game.playerY-1).walkIn(0, -1); }
+  move(): void { Game.getInstance().getTile(Game.playerX, Game.playerY-1).walkIn(); }
 }
 export class Down implements Input {
   isUp(): boolean { return false; }
@@ -609,7 +609,7 @@ export class Down implements Input {
   isLeft(): boolean { return false; }
   isRight(): boolean { return false; }
   isPlaceBomb(): boolean { return false; }
-  move(): void { Game.getInstance().getTile(Game.playerX, Game.playerY+1).walkIn(0, 1); }
+  move(): void { Game.getInstance().getTile(Game.playerX, Game.playerY+1).walkIn(); }
 }
 export class Left implements Input {
   isUp(): boolean { return false; }
@@ -617,7 +617,7 @@ export class Left implements Input {
   isLeft(): boolean { return true; }
   isRight(): boolean { return false; }
   isPlaceBomb(): boolean { return false; }
-  move(): void { Game.getInstance().getTile(Game.playerX-1, Game.playerY).walkIn(-1, 0); }
+  move(): void { Game.getInstance().getTile(Game.playerX-1, Game.playerY).walkIn(); }
 }
 export class Right implements Input {
   isUp(): boolean { return false; }
@@ -625,7 +625,7 @@ export class Right implements Input {
   isLeft(): boolean { return false; }
   isRight(): boolean { return true; }
   isPlaceBomb(): boolean { return false; }
-  move(): void { Game.getInstance().getTile(Game.playerX+1, Game.playerY).walkIn(1, 0); }
+  move(): void { Game.getInstance().getTile(Game.playerX+1, Game.playerY).walkIn(); }
 }
 export class Place implements Input {
   isUp(): boolean { return false; }
