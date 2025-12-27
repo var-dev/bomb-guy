@@ -16,6 +16,38 @@ enum RawTile {
   MONSTER_LEFT,
 }
 
+class Position {
+  static readonly UP = {dX: 0, dY: -1}
+  static readonly RIGHT = {dX: 1, dY: 0}
+  static readonly DOWN = {dX: 0, dY: 1}
+  static readonly LEFT = {dX: -1, dY: 0}
+  static readonly SAME = {dX: 0, dY: 0}
+}
+
+interface Executable {
+  execute(x: number, y: number): void
+}
+class ExecutableSetTile implements Executable{
+  constructor(private cmd: Game, private relative: {dX: number, dY: number}, private settable:TileConstructor){}
+  execute(x: number, y: number){
+    this.cmd.setTile(x + this.relative.dX, y + this.relative.dY, this.settable)
+  }
+}
+class ExecutableConditionalSwapTile implements Executable{
+  constructor(private cmd: Game, private relative: {dX: number, dY: number},  private replaceable: TileConstructor, private replacer: TileConstructor, private defaultReplacer: TileConstructor){}
+  execute(x: number, y: number){
+    if ((
+      this.cmd.getTile(x + this.relative.dX, y + this.relative.dY)).constructor.name 
+      === 
+      new this.replaceable(-1,-1).constructor.name
+    ){
+      this.cmd.setTile(x + this.relative.dX, y + this.relative.dY, this.replacer)
+      this.cmd.setTile(x, y, this.replaceable)
+    } else {
+      this.cmd.setTile(x, y, this.defaultReplacer)
+    }
+  }
+}
 type TileConstructor = new (x: number, y: number) => Tile
 type TilePredicate = (x: number, y: number) => boolean
 export class Game {
@@ -261,7 +293,8 @@ export class Bomb implements Tile {
     g.fillRect(this._x * Game.TILE_SIZE, this._y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){}
-  transition(){ Game.getInstance().setTile(this._x, this._y, BombClose);}
+  // transition(){ Game.getInstance().setTile(this._x, this._y, BombClose);}
+  transition(){ new ExecutableSetTile(Game.getInstance(), Position.SAME, BombClose).execute(this._x, this._y)}
   isExplosive(){ return true;}
   walkIn(){}
 }
@@ -463,12 +496,19 @@ export class MonsterRight implements Tile {
   }
   isGameOver(){ Game.over()}
   transition(){
-    if (Game.getInstance().getTile(this._x + 1, this._y).isAir()) {
-      Game.getInstance().setTile(this._x, this._y, Air);
-      Game.getInstance().setTile(this._x + 1, this._y, TmpMonsterRight);
-    } else {
-      Game.getInstance().setTile(this._x, this._y, MonsterDown);
-    }
+    // if (Game.getInstance().getTile(this._x + 1, this._y).isAir()) {
+    //   Game.getInstance().setTile(this._x, this._y, Air);
+    //   Game.getInstance().setTile(this._x + 1, this._y, TmpMonsterRight);
+    // } else {
+    //   Game.getInstance().setTile(this._x, this._y, MonsterDown);
+    // }
+    new ExecutableConditionalSwapTile(
+      Game.getInstance(), 
+      Position.RIGHT, 
+      Air, 
+      TmpMonsterRight, 
+      MonsterDown
+    ).execute(this._x, this._y)
   }
   isExplosive(){ return false;}
   walkIn(){}
