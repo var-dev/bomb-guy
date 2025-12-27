@@ -122,9 +122,11 @@ export class Game {
     if (--Game.delay > 0) return;
     Game.delay = Game.DELAY;
 
-    this._gameMap.forEach((row) => {
-      row.forEach((tile) => {
-        tile.transition();
+    this._gameMap.forEach((row, y) => {
+      row.forEach((tile, x) => {
+        tile.executable().forEach((executableItem) => {
+          executableItem.execute(x, y)
+        });
       });
     });
   }
@@ -206,7 +208,8 @@ export interface Tile {
   isGameOver(): void,
   transition(): void,
   isExplosive(): boolean,
-  walkIn(): void
+  walkIn(): void,
+  executable(): Executable[]
 }
 export class Air implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -233,6 +236,7 @@ export class Air implements Tile {
     Game.playerY = this._y;
     Game.playerX = this._x;
   }
+  executable(){return []}
 }
 export class Unbreakable implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -259,6 +263,7 @@ export class Unbreakable implements Tile {
   transition(){}
   isExplosive(){ return false;}
   walkIn(){}
+  executable(){return []}
 }
 export class Stone implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -285,6 +290,7 @@ export class Stone implements Tile {
   transition(){}
   isExplosive(){ return false;}
   walkIn(){}
+  executable(){return []}
 }
 export class Bomb implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -309,9 +315,10 @@ export class Bomb implements Tile {
   }
   isGameOver(){}
   // transition(){ Game.getInstance().setTile(this._x, this._y, BombClose);}
-  transition(){ new ExecutableSetTile(Game.getInstance(), Position.SAME, BombClose).execute(this._x, this._y)}
+  transition(){ }
   isExplosive(){ return true;}
   walkIn(){}
+  executable(){return [new ExecutableSetTile(Game.getInstance(), Position.SAME, BombClose)]}
 }
 export class BombClose implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -335,9 +342,10 @@ export class BombClose implements Tile {
     g.fillRect(this._x * Game.TILE_SIZE, this._y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){}
-  transition(){ Game.getInstance().setTile(this._x, this._y, BombReallyClose);}
+  transition(){}
   isExplosive(){ return true;}
   walkIn(){}
+  executable(){return [new ExecutableSetTile(Game.getInstance(), Position.SAME, BombReallyClose)]}
 }
 export class BombReallyClose implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -363,15 +371,24 @@ export class BombReallyClose implements Tile {
   isGameOver(){}
   transition(){
     // Game.getInstance().explode(this._x + 0, this._y - 1, Fire);
-    new ExecutableExplode(Game.getInstance(), Position.UP, Fire).execute(this._x, this._y )
-    Game.getInstance().explode(this._x + 0, this._y + 1, TmpFire);
-    Game.getInstance().explode(this._x - 1, this._y + 0, Fire);
-    Game.getInstance().explode(this._x + 1, this._y + 0, TmpFire);
-    Game.getInstance().setTile(this._x, this._y, Fire);
-    Game.bombs++;
+    // new ExecutableExplode(Game.getInstance(), Position.UP, Fire).execute(this._x, this._y )
+    // Game.getInstance().explode(this._x + 0, this._y + 1, TmpFire);
+    // Game.getInstance().explode(this._x - 1, this._y + 0, Fire);
+    // Game.getInstance().explode(this._x + 1, this._y + 0, TmpFire);
+    // Game.getInstance().setTile(this._x, this._y, Fire);
+    // Game.bombs++;
   }
   isExplosive(){ return true;}
   walkIn(){}
+  executable(){
+    Game.bombs++;
+    return [ 
+    new ExecutableExplode(Game.getInstance(), Position.UP, Fire),
+    new ExecutableExplode(Game.getInstance(), Position.DOWN, TmpFire),
+    new ExecutableExplode(Game.getInstance(), Position.LEFT, Fire),
+    new ExecutableExplode(Game.getInstance(), Position.RIGHT, TmpFire),
+    new ExecutableSetTile(Game.getInstance(), Position.SAME, Fire),
+  ]}
 }
 export class TmpFire implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -392,9 +409,10 @@ export class TmpFire implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){}
   isGameOver(){}
-  transition(){ Game.getInstance().setTile(this._x, this._y, Fire);}
+  transition(){}
   isExplosive(){ return false;}
   walkIn(){}
+  executable(){return [new ExecutableSetTile(Game.getInstance(), Position.SAME, Fire)]}
 }
 export class Fire implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -418,12 +436,13 @@ export class Fire implements Tile {
     g.fillRect(this._x * Game.TILE_SIZE, this._y * Game.TILE_SIZE, Game.TILE_SIZE, Game.TILE_SIZE);
   }
   isGameOver(){ Game.over()}
-  transition(){ Game.getInstance().setTile(this._x, this._y, Air);}
+  transition(){}
   isExplosive(){ return false;}
   walkIn(){
     Game.playerY = this._y;
     Game.playerX = this._x;
   }
+  executable(){return [new ExecutableSetTile(Game.getInstance(), Position.SAME, Air)]}
 }
 export class ExtraBomb implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -455,6 +474,7 @@ export class ExtraBomb implements Tile {
     Game.bombs++;
     Game.getInstance().setTile(Game.playerX, Game.playerY , Air);
   }
+  executable(){return []}
 }
 export class MonsterUp implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -479,15 +499,16 @@ export class MonsterUp implements Tile {
   }
   isGameOver(){ Game.over()}
   transition(){
-    if (Game.getInstance().getTile(this._x, this._y - 1).isAir()) {
-      Game.getInstance().setTile(this._x, this._y, Air);
-      Game.getInstance().setTile(this._x, this._y - 1 , MonsterUp);
-    } else {
-      Game.getInstance().setTile(this._x, this._y, MonsterRight);
-    }
+    // if (Game.getInstance().getTile(this._x, this._y - 1).isAir()) {
+    //   Game.getInstance().setTile(this._x, this._y, Air);
+    //   Game.getInstance().setTile(this._x, this._y - 1 , MonsterUp);
+    // } else {
+    //   Game.getInstance().setTile(this._x, this._y, MonsterRight);
+    // }
   }
   isExplosive(){ return false;}
   walkIn(){}
+  executable(){return [new ExecutableConditionalSwapTile(Game.getInstance(), Position.UP, Air, MonsterUp, MonsterRight)]}
 }
 export class MonsterRight implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -518,16 +539,17 @@ export class MonsterRight implements Tile {
     // } else {
     //   Game.getInstance().setTile(this._x, this._y, MonsterDown);
     // }
-    new ExecutableConditionalSwapTile(
-      Game.getInstance(), 
-      Position.RIGHT, 
-      Air, 
-      TmpMonsterRight, 
-      MonsterDown
-    ).execute(this._x, this._y)
+    // new ExecutableConditionalSwapTile(
+    //   Game.getInstance(), 
+    //   Position.RIGHT, 
+    //   Air, 
+    //   TmpMonsterRight, 
+    //   MonsterDown
+    // ).execute(this._x, this._y)
   }
   isExplosive(){ return false;}
   walkIn(){}
+  executable(){return [new ExecutableConditionalSwapTile(Game.getInstance(), Position.RIGHT, Air, TmpMonsterRight, MonsterDown)]}
 }
 export class TmpMonsterRight implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -548,9 +570,10 @@ export class TmpMonsterRight implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){}
   isGameOver(){}
-  transition(){ Game.getInstance().setTile(this._x, this._y, MonsterRight);}
+  transition(){}
   isExplosive(){ return false;}
   walkIn(){}
+  executable(){return [new ExecutableSetTile(Game.getInstance(), Position.SAME, MonsterRight)]}
 }
 export class MonsterDown implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -575,15 +598,16 @@ export class MonsterDown implements Tile {
   }
   isGameOver(){ Game.over()}
   transition(){
-    if (Game.getInstance().getTile(this._x, this._y + 1).isAir()) {
-      Game.getInstance().setTile(this._x, this._y, Air);
-      Game.getInstance().setTile(this._x, this._y + 1, TmpMonsterDown);
-    } else {
-      Game.getInstance().setTile(this._x, this._y, MonsterLeft);
-    }
+    // if (Game.getInstance().getTile(this._x, this._y + 1).isAir()) {
+    //   Game.getInstance().setTile(this._x, this._y, Air);
+    //   Game.getInstance().setTile(this._x, this._y + 1, TmpMonsterDown);
+    // } else {
+    //   Game.getInstance().setTile(this._x, this._y, MonsterLeft);
+    // }
   }
   isExplosive(){ return false;}
   walkIn(){}
+  executable(){return [new ExecutableConditionalSwapTile(Game.getInstance(), Position.DOWN, Air, TmpMonsterDown, MonsterLeft)]}
 }
 export class TmpMonsterDown implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -604,9 +628,10 @@ export class TmpMonsterDown implements Tile {
   isMonsterLeft(): boolean { return false; }
   draw(g: CanvasRenderingContext2D){}
   isGameOver(){}
-  transition(){ Game.getInstance().setTile(this._x, this._y, MonsterDown);}
+  transition(){}
   isExplosive(){ return false;}
   walkIn(){}
+  executable(){return [new ExecutableSetTile(Game.getInstance(), Position.SAME, MonsterDown)]}
 }
 export class MonsterLeft implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -631,15 +656,16 @@ export class MonsterLeft implements Tile {
   }
   isGameOver(){ Game.over()}
   transition(){  // below swapLeft
-    if (Game.getInstance().getTile(this._x - 1, this._y).isAir()) {
-      Game.getInstance().setTile(this._x    , this._y, Air);
-      Game.getInstance().setTile(this._x - 1, this._y, MonsterLeft);
-    } else {
-      Game.getInstance().setTile(this._x, this._y, MonsterUp);
-    }
+    // if (Game.getInstance().getTile(this._x - 1, this._y).isAir()) {
+    //   Game.getInstance().setTile(this._x    , this._y, Air);
+    //   Game.getInstance().setTile(this._x - 1, this._y, MonsterLeft);
+    // } else {
+    //   Game.getInstance().setTile(this._x, this._y, MonsterUp);
+    // }
   }
   isExplosive(){ return false;}
   walkIn(){}
+  executable(){return [new ExecutableConditionalSwapTile(Game.getInstance(), Position.LEFT, Air, MonsterLeft, MonsterUp)]}
 }
 
 export interface Input {
