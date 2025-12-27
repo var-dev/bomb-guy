@@ -48,6 +48,21 @@ class ExecutableConditionalSwapTile implements Executable{
     }
   }
 }
+class ExecutableExplode implements Executable{
+  constructor(private cmd: Game, private relative: {dX: number, dY: number}, private settable:TileConstructor){}
+  execute(x: number, y: number){
+    if (this.cmd.getTile(x + this.relative.dX, y + this.relative.dY).isStone()) {
+      if (Game.randomFunction()) {
+        this.cmd.setTile(x + this.relative.dX, y + this.relative.dY, ExtraBomb);
+      }
+      else this.cmd.setTile(x + this.relative.dX, y + this.relative.dY, this.settable);
+    } else if (!this.cmd.getTile(x + this.relative.dX, y + this.relative.dY).isUnbreakable()) {
+      if (this.cmd.getTile(x + this.relative.dX, y + this.relative.dY).isExplosive()) Game.bombs++;
+      this.cmd.setTile(x + this.relative.dX, y + this.relative.dY, this.settable);
+    }
+  }
+}
+
 type TileConstructor = new (x: number, y: number) => Tile
 type TilePredicate = (x: number, y: number) => boolean
 export class Game {
@@ -347,7 +362,8 @@ export class BombReallyClose implements Tile {
   }
   isGameOver(){}
   transition(){
-    Game.getInstance().explode(this._x + 0, this._y - 1, Fire);
+    // Game.getInstance().explode(this._x + 0, this._y - 1, Fire);
+    new ExecutableExplode(Game.getInstance(), Position.UP, Fire).execute(this._x, this._y )
     Game.getInstance().explode(this._x + 0, this._y + 1, TmpFire);
     Game.getInstance().explode(this._x - 1, this._y + 0, Fire);
     Game.getInstance().explode(this._x + 1, this._y + 0, TmpFire);
