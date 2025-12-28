@@ -17,24 +17,28 @@ enum RawTile {
 }
 
 class Position {
-  static readonly UP = {dX: 0, dY: -1}
-  static readonly RIGHT = {dX: 1, dY: 0}
-  static readonly DOWN = {dX: 0, dY: 1}
-  static readonly LEFT = {dX: -1, dY: 0}
-  static readonly SAME = {dX: 0, dY: 0}
+  static readonly NorthOf = {dX: 0, dY: -1} as const
+  static readonly WestOf = {dX: 1, dY: 0} as const
+  static readonly SouthOf = {dX: 0, dY: 1} as const
+  static readonly EastOf = {dX: -1, dY: 0} as const
+  static readonly Same = {dX: 0, dY: 0} as const
+  static readonly All = [Position.NorthOf, Position.WestOf, Position.SouthOf, Position.EastOf, Position.Same] as const
+  private constructor(){}
 }
+
+type PositionType = typeof Position.All[number]
 
 interface Executable {
   execute(x: number, y: number): void
 }
 class ExecutableSetTile implements Executable{
-  constructor(private cmd: Game, private relative: {dX: number, dY: number}, private settable:TileConstructor){}
+  constructor(private cmd: Game, private relative: PositionType, private settable:TileConstructor){}
   execute(x: number, y: number){
     this.cmd.setTile(x + this.relative.dX, y + this.relative.dY, this.settable)
   }
 }
 class ExecutableConditionalSwapTile implements Executable{
-  constructor(private cmd: Game, private relative: {dX: number, dY: number},  private replaceable: TileConstructor, private replacer: TileConstructor, private defaultReplacer: TileConstructor){}
+  constructor(private cmd: Game, private relative: PositionType, private replaceable: TileConstructor, private replacer: TileConstructor, private defaultReplacer: TileConstructor){}
   execute(x: number, y: number){
     if ((
       this.cmd.getTile(x + this.relative.dX, y + this.relative.dY)).constructor.name 
@@ -49,7 +53,7 @@ class ExecutableConditionalSwapTile implements Executable{
   }
 }
 class ExecutableExplode implements Executable{
-  constructor(private cmd: Game, private relative: {dX: number, dY: number}, private settable:TileConstructor){}
+  constructor(private cmd: Game, private relative: PositionType, private settable: TileConstructor){}
   execute(x: number, y: number){
     if (this.cmd.getTile(x + this.relative.dX, y + this.relative.dY).isStone()) {
       if (Game.randomFunction()) {
@@ -309,7 +313,7 @@ export class Bomb implements Tile {
   isGameOver(){}
   isExplosive(){ return true;}
   walkIn(){}
-  executable(){return [new ExecutableSetTile(Game.getInstance(), Position.SAME, BombClose)]}
+  executable(){return [new ExecutableSetTile(Game.getInstance(), Position.Same, BombClose)]}
 }
 export class BombClose implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -335,7 +339,7 @@ export class BombClose implements Tile {
   isGameOver(){}
   isExplosive(){ return true;}
   walkIn(){}
-  executable(){return [new ExecutableSetTile(Game.getInstance(), Position.SAME, BombReallyClose)]}
+  executable(){return [new ExecutableSetTile(Game.getInstance(), Position.Same, BombReallyClose)]}
 }
 export class BombReallyClose implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -364,11 +368,11 @@ export class BombReallyClose implements Tile {
   executable(){
     Game.bombs++;
     return [ 
-    new ExecutableExplode(Game.getInstance(), Position.UP, Fire),
-    new ExecutableExplode(Game.getInstance(), Position.DOWN, TmpFire),
-    new ExecutableExplode(Game.getInstance(), Position.LEFT, Fire),
-    new ExecutableExplode(Game.getInstance(), Position.RIGHT, TmpFire),
-    new ExecutableSetTile(Game.getInstance(), Position.SAME, Fire),
+    new ExecutableExplode(Game.getInstance(), Position.NorthOf, Fire),
+    new ExecutableExplode(Game.getInstance(), Position.SouthOf, TmpFire),
+    new ExecutableExplode(Game.getInstance(), Position.EastOf, Fire),
+    new ExecutableExplode(Game.getInstance(), Position.WestOf, TmpFire),
+    new ExecutableSetTile(Game.getInstance(), Position.Same, Fire),
   ]}
 }
 export class TmpFire implements Tile {
@@ -392,7 +396,7 @@ export class TmpFire implements Tile {
   isGameOver(){}
   isExplosive(){ return false;}
   walkIn(){}
-  executable(){return [new ExecutableSetTile(Game.getInstance(), Position.SAME, Fire)]}
+  executable(){return [new ExecutableSetTile(Game.getInstance(), Position.Same, Fire)]}
 }
 export class Fire implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -421,7 +425,7 @@ export class Fire implements Tile {
     Game.playerY = this._y;
     Game.playerX = this._x;
   }
-  executable(){return [new ExecutableSetTile(Game.getInstance(), Position.SAME, Air)]}
+  executable(){return [new ExecutableSetTile(Game.getInstance(), Position.Same, Air)]}
 }
 export class ExtraBomb implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -478,7 +482,7 @@ export class MonsterUp implements Tile {
   isGameOver(){ Game.over()}
   isExplosive(){ return false;}
   walkIn(){}
-  executable(){return [new ExecutableConditionalSwapTile(Game.getInstance(), Position.UP, Air, MonsterUp, MonsterRight)]}
+  executable(){return [new ExecutableConditionalSwapTile(Game.getInstance(), Position.NorthOf, Air, MonsterUp, MonsterRight)]}
 }
 export class MonsterRight implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -504,7 +508,7 @@ export class MonsterRight implements Tile {
   isGameOver(){ Game.over()}
   isExplosive(){ return false;}
   walkIn(){}
-  executable(){return [new ExecutableConditionalSwapTile(Game.getInstance(), Position.RIGHT, Air, TmpMonsterRight, MonsterDown)]}
+  executable(){return [new ExecutableConditionalSwapTile(Game.getInstance(), Position.WestOf, Air, TmpMonsterRight, MonsterDown)]}
 }
 export class TmpMonsterRight implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -527,7 +531,7 @@ export class TmpMonsterRight implements Tile {
   isGameOver(){}
   isExplosive(){ return false;}
   walkIn(){}
-  executable(){return [new ExecutableSetTile(Game.getInstance(), Position.SAME, MonsterRight)]}
+  executable(){return [new ExecutableSetTile(Game.getInstance(), Position.Same, MonsterRight)]}
 }
 export class MonsterDown implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -553,7 +557,7 @@ export class MonsterDown implements Tile {
   isGameOver(){ Game.over()}
   isExplosive(){ return false;}
   walkIn(){}
-  executable(){return [new ExecutableConditionalSwapTile(Game.getInstance(), Position.DOWN, Air, TmpMonsterDown, MonsterLeft)]}
+  executable(){return [new ExecutableConditionalSwapTile(Game.getInstance(), Position.SouthOf, Air, TmpMonsterDown, MonsterLeft)]}
 }
 export class TmpMonsterDown implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -576,7 +580,7 @@ export class TmpMonsterDown implements Tile {
   isGameOver(){}
   isExplosive(){ return false;}
   walkIn(){}
-  executable(){return [new ExecutableSetTile(Game.getInstance(), Position.SAME, MonsterDown)]}
+  executable(){return [new ExecutableSetTile(Game.getInstance(), Position.Same, MonsterDown)]}
 }
 export class MonsterLeft implements Tile {
   constructor(private _x: number, private _y: number){}
@@ -602,7 +606,7 @@ export class MonsterLeft implements Tile {
   isGameOver(){ Game.over()}
   isExplosive(){ return false;}
   walkIn(){}
-  executable(){return [new ExecutableConditionalSwapTile(Game.getInstance(), Position.LEFT, Air, MonsterLeft, MonsterUp)]}
+  executable(){return [new ExecutableConditionalSwapTile(Game.getInstance(), Position.EastOf, Air, MonsterLeft, MonsterUp)]}
 }
 
 export interface Input {
