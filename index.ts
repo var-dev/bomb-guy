@@ -17,28 +17,29 @@ enum RawTile {
 }
 
 class Position {
-  static readonly NorthOf = {dX: 0, dY: -1} as const
-  static readonly WestOf = {dX: 1, dY: 0} as const
-  static readonly SouthOf = {dX: 0, dY: 1} as const
-  static readonly EastOf = {dX: -1, dY: 0} as const
-  static readonly Same = {dX: 0, dY: 0} as const
+  private readonly _brand = 'Position'
+  static readonly NorthOf = new Position(0, -1)
+  static readonly WestOf = new Position(1, 0)
+  static readonly SouthOf = new Position(0, 1)
+  static readonly EastOf = new Position(-1, 0)
+  static readonly Same = new Position(0, 0)
   static readonly All = [Position.NorthOf, Position.WestOf, Position.SouthOf, Position.EastOf, Position.Same] as const
-  private constructor(){}
+  public constructor(public readonly dX: -1|0|1, public readonly dY: -1|0|1){}
 }
 
-type PositionType = typeof Position.All[number]
+// type Position = Position
 
 interface Executable {
   execute(x: number, y: number): void
 }
 class ExecutableSetTile implements Executable{
-  constructor(private cmd: Game, private relative: PositionType, private settable:TileConstructor){}
+  constructor(private cmd: Game, private relative: Position, private settable:TileConstructor){}
   execute(x: number, y: number){
     this.cmd.setTile(x + this.relative.dX, y + this.relative.dY, this.settable)
   }
 }
 class ExecutableConditionalSwapTile implements Executable{
-  constructor(private cmd: Game, private relative: PositionType, private replaceable: TileConstructor, private replacer: TileConstructor, private defaultReplacer: TileConstructor){}
+  constructor(private cmd: Game, private relative: Position, private replaceable: TileConstructor, private replacer: TileConstructor, private defaultReplacer: TileConstructor){}
   execute(x: number, y: number){
     if ((
       this.cmd.getTile(x + this.relative.dX, y + this.relative.dY)).constructor.name 
@@ -53,7 +54,7 @@ class ExecutableConditionalSwapTile implements Executable{
   }
 }
 class ExecutableExplode implements Executable{
-  constructor(private cmd: Game, private relative: PositionType, private settable: TileConstructor){}
+  constructor(private cmd: Game, private relative: Position, private settable: TileConstructor){}
   execute(x: number, y: number){
     if (this.cmd.getTile(x + this.relative.dX, y + this.relative.dY).isStone()) {
       if (Game.randomFunction()) {
